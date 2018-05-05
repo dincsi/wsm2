@@ -1,0 +1,12 @@
+# Web crontab for public website.
+# Created at $TIMESTAMP by website-manager-2 toolkit.
+#
+# Every line defines a timed call of urlcheck utility. Result written to
+# log/webcron.log file.
+#
+# Syntax:  minute hour day month day_of_week urlcheck_call
+# Standard cron datetime values are accepted, like *, */10, 0-59/5.
+# Urlcheck call is http(s) url followed by an optional timeout in seconds.
+# Example (Mon-Fri, 8h-16h every 10 minutes call with 1.5 mins timeout):
+# */10 8-16 * * 1-5 https://www.mydomain.com/cron.php?update=1 90
+

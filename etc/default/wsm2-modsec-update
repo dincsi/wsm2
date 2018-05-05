@@ -1,0 +1,18 @@
+# ModSecurity ruleset updater configuration.
+# Part of the website-manager-2 package.
+
+RepositoryURI	https://www.modsecurity.org/autoupdate/repository/
+
+LocalRepository /etc/apache2/modsecurity
+LocalRules	/etc/apache2/modsecurity
+Unpack		True
+
+# What version (or version prefix) to use
+#Version        2.0
+
+# Email update notifications
+NotifyEmail       "root@localhost"
+NotifyEmailFrom   "ModSec Rules Updater <root@localhost>"
+
+# Output lots of debugging info?
+Debug             False

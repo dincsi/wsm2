@@ -1,0 +1,14 @@
+# Errata for ModSecurity rulesets 2.2.9+ and 3.0.0+
+#
+# Quick test - uncomment rule removing line below, reload Apache and check:
+# wget -S --spider --user-agent='webinspect' localhost
+# Simulated attack will not intercepted.
+# For v2.x ruleset:
+#SecRuleRemoveById 990002
+# For v3.x ruleset:
+#SecRuleRemoveById 913100
+
+# Feel free to define server-wide modifications and exclusions below.
+
+## Range 0-xx in request (by Facebook) - v2.x ruleset only
+SecRuleRemoveByID 958291

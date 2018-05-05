@@ -1,0 +1,29 @@
+# Logrotate fragment for wsm2 logfiles.
+# Part of website-manager-2 package.
+
+/var/log/wsm2.log {
+  rotate 4
+  weekly
+  compress
+  missingok
+  notifempty
+}
+
+/var/www/*/log/webcron.log {
+  rotate 4
+  weekly
+  compress
+  missingok
+  notifempty
+  create 0640 webadmin www-data
+}
+
+/var/www/*/log/*/*.log {
+  rotate 53
+  weekly
+  compress
+  missingok
+  notifempty
+  su www-data www-data
+  create 0660 www-data www-data
+}

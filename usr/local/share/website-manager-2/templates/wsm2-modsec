@@ -1,0 +1,115 @@
+# libapache-modsecurity-2 local settings - special thanks to Attila Garancsi.
+# https://github.com/SpiderLabs/ModSecurity/wiki/Reference-Manual for details.
+# Debian Jessie+ version, requires Apache 2.4+ and ModSecurity engine 2.8+
+# Part of website-manager-2 package.
+
+<IfModule security2_module>
+    # Log settings for concurrent method.
+    SecAuditLogType Concurrent
+    SecAuditLogDirMode  02770
+    SecAuditLogFileMode 00660
+    SecAuditEngine RelevantOnly
+    SecAuditLogRelevantStatus "^(?:5)"
+#   SecAuditLogRelevantStatus "^(?:5|4(?!04))"
+    SecAuditLogParts ABFHIJZ
+    SecAuditLog         	$APACHELOGDIR/ALLHOSTS-audit.log
+    SecAuditLogStorageDir       $WSMMODSECDIR/AuditLogDir
+    SecDebugLogLevel 0
+    SecDebugLog         	$APACHELOGDIR/ALLHOSTS-modsec-debug.log
+
+    # Temporary folder settings.
+    SecDataDir $WSMMODSECDIR/SecDataDir
+    SecTmpDir  $WSMMODSECDIR/SecTmpDir
+    # The location where ModSecurity stores intercepted uploaded files.
+    SecUploadDir $WSMMODSECDIR/SecUploadDir
+    SecUploadKeepFiles RelevantOnly
+    SecUploadFileMode 0660
+
+    # PCRE Tuning.
+    # Workaround for a behavior change from ModSecurity 2.5.12
+    # http://sourceforge.net/mailarchive/message.php?msg_id=24512950
+    SecPcreMatchLimit 8000
+    SecPcreMatchLimitRecursion 8000
+    # Some internal errors will set flags in TX and we will need to look for these.
+    # All of these are prefixed with "MSC_".  The following flags currently exist:
+    # MSC_PCRE_LIMITS_EXCEEDED: PCRE match limits were exceeded.
+    SecRule TX:/^MSC_/ "!@streq 0" \
+            "id:'200005',phase:2,t:none,deny,msg:'ModSecurity internal error flagged: %{MATCHED_VAR_NAME}'"
+
+    # Turn the filtering engine On.
+    SecRuleEngine On
+    #SecRuleEngine DetectionOnly
+
+    # Request body handling.
+    # Allow ModSecurity to access request bodies.
+    SecRequestBodyAccess On
+    # Enable XML request body parser.
+    SecRule REQUEST_HEADERS:Content-Type "text/xml" \
+            "id:'200000',phase:1,t:none,t:lowercase,pass,nolog,ctl:requestBodyProcessor=XML"
+    # Enable JSON request body parser.
+    SecRule REQUEST_HEADERS:Content-Type "application/json" \
+            "id:'200001',phase:1,t:none,t:lowercase,pass,nolog,ctl:requestBodyProcessor=JSON"
+    # Maximum request body size we will accept for buffering.
+    # The second value refers to the size of data, with files excluded.
+    SecRequestBodyLimit 13107200
+    SecRequestBodyNoFilesLimit 131072
+    # What do do if the request body size is above our configured limit.
+    SecRequestBodyLimitAction Reject
+    # Store up to 128 KB of request body data in memory.
+    SecRequestBodyInMemoryLimit 131072
+    # Verify that we've correctly processed the request body.
+    SecRule REQBODY_ERROR "!@eq 0" \
+            "id:'200002', phase:2,t:none,log,deny,status:400,msg:'Failed to parse request body.',logdata:'%{reqbody_error_msg}',severity:2"
+    # By default be strict with what we accept in the multipart/form-data
+    # request body. If the rule below proves to be too strict for your
+    # environment consider changing it to detection-only. You are encouraged
+    # _not_ to remove it altogether.
+    SecRule MULTIPART_STRICT_ERROR "!@eq 0" \
+            "id:'200003',phase:2,t:none,log,deny,status:400, \
+            msg:'Multipart request body failed strict validation: \
+            PE %{REQBODY_PROCESSOR_ERROR}, \
+            BQ %{MULTIPART_BOUNDARY_QUOTED}, \
+            BW %{MULTIPART_BOUNDARY_WHITESPACE}, \
+            DB %{MULTIPART_DATA_BEFORE}, \
+            DA %{MULTIPART_DATA_AFTER}, \
+            HF %{MULTIPART_HEADER_FOLDING}, \
+            LF %{MULTIPART_LF_LINE}, \
+            SM %{MULTIPART_MISSING_SEMICOLON}, \
+            IQ %{MULTIPART_INVALID_QUOTING}, \
+            IP %{MULTIPART_INVALID_PART}, \
+            IH %{MULTIPART_INVALID_HEADER_FOLDING}, \
+            FL %{MULTIPART_FILE_LIMIT_EXCEEDED}'"
+    # Did we see anything that might be a boundary?
+    SecRule MULTIPART_UNMATCHED_BOUNDARY "!@eq 0" \
+            "id:'200004',phase:2,t:none,log,deny,msg:'Multipart parser detected a possible unmatched boundary.'"
+
+    # Response body handling.
+    # Do keep in mind that enabling this directive does increases both
+    # memory consumption and response latency.
+    SecResponseBodyAccess Off
+    # Which response MIME types do you want to inspect?
+    SecResponseBodyMimeType text/plain text/html text/xml
+    # Buffer response bodies of up to 512 KB in length.
+    # By default, we process what we have and let the rest through.
+    SecResponseBodyLimit 524288
+    SecResponseBodyLimitAction ProcessPartial
+
+    # Miscellaneous.
+    # Use the most commonly used application/x-www-form-urlencoded parameter separator.
+    SecArgumentSeparator &
+    # Settle on version 0 (zero) cookies.
+    SecCookieFormat 0
+    # Specify your Unicode Code Point.
+    SecUnicodeMapFile $WSMMODSECCONFDIR/unicode.mapping 20127
+    # Don't share information about current ModSecurity version and dependencies versions.
+    SecStatusEngine Off
+
+    # Including the core rule set (the new way).
+    # You may define or include your own general rules there.
+    IncludeOptional $WSMMODSECCONFDIR/rules/*.conf
+    IncludeOptional $WSMMODSECCONFDIR/rules/activated_rules/*.conf
+    # Optional system-wide errata rules (must be the last ruleset).
+    IncludeOptional $WSMMODSECCONFDIR/modsecurity_crs_??_errata.wsm2
+    IncludeOptional $WSMMODSECCONFDIR/rules/modsecurity_crs_*errata*.conf
+
+</IfModule>

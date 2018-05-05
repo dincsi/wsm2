@@ -1,0 +1,40 @@
+# Common literals for AwStats. A shell script fragment, handle with care!
+# Part of the website-manager-2 package.
+
+LANGUAGE="hu"                                           # HTML results language 
+
+###################################################
+# Perhaps isn't necessary to modify anything below.
+
+APACHE_DIR="/etc/apache2"                               # Apache configuration base directory
+APACHE_LOG_DIR="/var/log/apache2"                       # Apache log directory
+APACHE_AHOSTS="$APACHE_DIR/sites-available"             # Available virtualhosts directory
+APACHE_VHOSTS="$APACHE_DIR/sites-enabled"               # Enabled virtualhosts directory
+APACHEADMIN="webadmin"                                  # Linux user for web administration
+APACHEADMINGROUP="www-data"                             # Linux group for web administration
+AWK="/usr/bin/awk"                                      # awk command call
+AWSTATS_CONFIG="/etc/awstats"                           # AwStats configuration directory
+AWSTATS_DATADIR="/var/lib/awstats"                      # AwStats database directory
+AWSTATS_EXC="$APACHE_DIR/awstats.exception"             # Parsed exception file
+AWSTATS_HOSTS="$APACHE_DIR/awstats.hosts"               # Parsed hosts file
+AWSTATS_TEMPLATE="$AWSTATS_CONFIG/awstats.conf.template"        # AwStats template
+BASENAME="/usr/bin/basename"                            # basename command call
+DATE="/bin/date"                                        # date command call
+EXIT_ERR="1"                                            # Error code on failure
+FIND="/usr/bin/find"                                    # find command call
+GREP="/bin/grep"                                        # grep command call
+ICONPATH="/usr/share/awstats/icon"                      # AwStats icon folder
+IFCONFIG="/sbin/ifconfig"                               # ifconfig command call
+NOSTAT="NOSTAT"                                         # Exclusion token
+SED="/bin/sed"                                          # sed command call
+SORT="/usr/bin/sort"                                    # sort command call
+STATS_ROOT_DIR="/var/www/awstats"                       # Web results directory
+
+awstats_bmenu="/usr/local/share/website-manager-2/awstats/awstats_buildmenupages.sh"
+awstats_build="/usr/local/share/website-manager-2/awstats/awstats_buildmonthpage.sh"
+awstats_buildstatic="/usr/local/bin/awstats_buildstaticpages.pl"
+awstats_program="/usr/lib/cgi-bin/awstats.pl"
+awstats_refresh="/usr/local/share/website-manager-2/awstats/awstats_refreshpages.sh"
+awstats_scanhosts="/usr/local/share/website-manager-2/awstats/awstats_scanhosts.sh"
+awstats_updateall="/usr/local/bin/awstats_updateall.pl"
+

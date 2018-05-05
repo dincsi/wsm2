@@ -1,0 +1,12 @@
+# Exceptions for awstats_scanhosts utility (cron job).
+# Parsed list, part of website-manager-2 package.
+#
+# A line may contain an Apache ServerName and a substitute name
+# delimited with white space. Using the NOSCAN token as a substitute
+# simply disables web statistics for corresponding ServerName.
+# Empty lines and hashmark comment lines are allowed and ignored.
+#
+# Examples:
+# hostnameinApacheServerName.com hostnameinlogfiles.com
+# inactivehost.com NOSTAT
+

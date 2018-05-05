@@ -1,0 +1,18 @@
+# OpenSSL configuration for a common web client (browser) certificate signing.
+# To use with 'openssl x509' (not 'openssl ca') signing method only.
+# Part of website-manager-2 package.
+
+extensions		= v3_client
+
+# Extensions below will be used only, requested extensions will be ignored.
+[ v3_client ]
+basicConstraints	= critical, CA:false
+nsCertType 		= client
+nsComment               = "Web Client Certificate"
+keyUsage 		= critical, nonRepudiation, digitalSignature, keyEncipherment
+extendedKeyUsage	= clientAuth
+# PKIX recommendations.
+subjectKeyIdentifier	= hash
+authorityKeyIdentifier	= keyid, issuer
+subjectAltName		= email:copy
+issuerAltName		= issuer:copy

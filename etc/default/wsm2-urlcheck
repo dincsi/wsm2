@@ -1,0 +1,32 @@
+# Common literals for URLCheck utility. A shell script fragment, handle with care!
+# Part of the website-manager-2 package.
+
+URLCHECKAGENT="urlcheck-robot"                          # urlcheck browser agent name
+URLCHECKTIMEOUT=30                                      # urlcheck default timeout (secs)
+
+###################################################
+# Perhaps isn't necessary to modify anything below.
+
+APACHECOMMONLOG="ALLHOSTS"                              # Filename for common weblogs
+APACHELOGDIR="/var/log/apache2"                         # Root directory for Apache logs
+APACHEVHOSTSENDIR="/etc/apache2/sites-enabled"          # Directory for enabled virtualhosts
+AWK="/usr/bin/awk"                                      # awk command call
+DATE="/bin/date"                                        # date command call
+EXCEPTURL=""                                            # | delimited list - deprecated
+EXIT_ERR="1"                                            # Exit code on error
+EXIT_SUCC="0"                                           # Exit code on success
+GREP="/bin/grep"                                        # grep command call
+SED="/bin/sed"                                          # sed command call
+SORT="/usr/bin/sort"                                    # sort command call
+URLCHECK="/usr/local/bin/urlcheck"                      # urlcheck pathname
+URLCHECK_EXC="/etc/apache2/urlcheck.exception"          # urlcheck exceptions file pathname
+URLCHECK_HOSTS="/etc/apache2/urlcheck.hosts"            # urlcheck hosts file pathname
+URLCHECK_SUFFIX="-urlcheck.log"                         # suffix for urlcheck logs
+URLCHECKNOCHECK="NOCHECK"                               # don't check exception token
+URLCHECKOK="\( 200 (\)\|\( 200 OK\)"                    # successfull urlcheck result code
+WGET="/usr/bin/wget"                                    # wget command call
+
+# Messages
+MSG_WSM_URLCHECK_FATAL="000 Fatal!"
+MSG_WSM_URLCHECK_NOSCRIPT="Fatal: $URLCHECK isn't found!"
+MSG_WSM_URLCHECK_USAGE="Usage: $0 URL_to_check [ timeout_in_seconds ]"

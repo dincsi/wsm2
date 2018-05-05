@@ -1,0 +1,12 @@
+# Exceptions for urlcheck_scanhosts utility (cron job).
+# Parsed list, part of website-manager-2 package.
+#
+# A line may contain a virtualhost ServerName and a substitute URL
+# delimited with white space. Using the NOCHECK token as a substitute
+# simply disables corresponding ServerName check.
+# Empty lines and hashmark comment lines are allowed and ignored.
+#
+# Examples:
+# somehost.com hosttocheck.com
+# inactivehost.com NOCHECK
+

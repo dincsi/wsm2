@@ -1,0 +1,12 @@
+# Manually edited host list for awstats_scanhosts utility.
+# Parsed list, part of website-manager-2 package.
+#
+# A line may contain a simple host to handle (without white spaces).
+# You may force to maintain web statistics for this host without
+# enabling them via a2ensite utility (e.g. temporaily disabled).
+# Empty lines and hashmark comment lines are allowed and ignored.
+# awstats_scanhosts checks these hosts before active ServerNames.
+#
+# Example:
+# www.somehost.net
+

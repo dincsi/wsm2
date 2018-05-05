@@ -1,0 +1,18 @@
+# OpenSSL configuration for a local webserver certificate self-signing.
+# To use with 'openssl x509' (not 'openssl ca') signing method only.
+# Part of website-manager-2 package.
+
+extensions		= v3_self
+
+# Extensions below will be used only, requested extensions will be ignored.
+[ v3_self ]
+basicConstraints	= critical, CA:false, pathlen:0
+nsCertType 		= sslCA, server
+nsComment               = "Self-signed Webserver Certificate"
+keyUsage 		= critical, cRLSign, keyCertSign, digitalSignature, keyEncipherment
+extendedKeyUsage	= serverAuth
+# PKIX recommendations.
+subjectKeyIdentifier	= hash
+authorityKeyIdentifier	= keyid:always, issuer
+subjectAltName		= email:copy
+issuerAltName		= issuer:copy

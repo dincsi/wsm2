@@ -1,0 +1,106 @@
+# OpenSSL configuration for a local web CA.
+# Created by website-manager-2 utility.
+
+RANDFILE		= $APACHEAUTHDIR/$FQHN.CA.rnd
+default_ca		= web_ca
+# Extensions used building CA itself as root CA.
+extensions		= v3_root
+
+# Settings for the local web CA.
+#
+[ web_ca ]
+#
+certificate		= $APACHEAUTHDIR/$FQHN.CA.pem
+private_key		= $APACHEAUTHDIR/$FQHN.CA.key
+database		= $APACHEAUTHDIR/$FQHN.CA.idx
+serial			= $APACHEAUTHDIR/$FQHN.CA.ser
+new_certs_dir		= $APACHEAUTHDIR
+#
+default_days		= $SSLCERTDAYS
+default_crl_days	= $SSLCRLDAYS
+default_md 		= sha1
+unique_subject		= no
+#
+# By default a webserver certificate will be signed.
+policy			= policy_match
+x509_extensions		= v3_server
+# Requested extensions are considered, but may overridden here.
+copy_extensions		= copy
+
+# Policies for certificate requests to be sign with this CA.
+#
+[ policy_match ]
+#
+countryName 		= match
+stateOrProvinceName 	= match
+organizationName 	= supplied
+organizationalUnitName 	= optional
+commonName 		= supplied
+emailAddress 		= supplied
+#
+[ policy_anything ]
+#
+countryName		= optional
+stateOrProvinceName	= optional
+localityName		= optional
+organizationName	= optional
+organizationalUnitName	= optional
+commonName		= supplied
+emailAddress		= optional
+
+# Extensions for a certificate revocation list.
+#
+[ v3_clr ]
+#
+# PKIX recommendations.
+issuerAltName		= issuer:copy
+authorityKeyIdentifier	= keyid:always
+
+# Extensions to add to server certificates issued.
+# Overwrites requested extensions!
+#
+[ v3_server ]
+#
+basicConstraints	= critical, CA:false
+nsCertType		= server
+keyUsage		= critical, digitalSignature, keyEncipherment
+extendedKeyUsage        = serverAuth
+# URI for revocations.
+crlDistributionPoints   = URI:http://$FQHN/CA.crl
+# PKIX recommendation.
+subjectKeyIdentifier	= hash
+authorityKeyIdentifier	= keyid, issuer
+subjectAltName		= email:copy
+issuerAltName		= issuer:copy
+
+# Extensions to add to client certificates issued.
+# Overwrites requested extensions!
+#
+[ v3_client ]
+#
+basicConstraints	= critical, CA:false
+nsCertType		= client
+keyUsage		= critical, nonRepudiation, digitalSignature, keyEncipherment
+extendedKeyUsage	= clientAuth
+# PKIX recommendations.
+subjectKeyIdentifier	= hash
+authorityKeyIdentifier	= keyid, issuer
+subjectAltName		= email:copy
+issuerAltName		= issuer:copy
+
+# Extentions to add to the self signed local root (web) CA certificate.
+# Overwrites requested extensions, but this doesn't matter here :-).
+#
+[ v3_root ]
+#
+basicConstraints	= critical, CA:true, pathlen:0
+nsCertType 		= sslCA
+keyUsage 		= critical, cRLSign, keyCertSign
+extendedKeyUsage        = serverAuth
+# URI for revocations.
+crlDistributionPoints	= URI:http://$FQHN/CA.crl
+# PKIX recommendations.
+subjectKeyIdentifier	= hash
+authorityKeyIdentifier	= keyid:always, issuer
+subjectAltName		= email:copy
+issuerAltName		= issuer:copy

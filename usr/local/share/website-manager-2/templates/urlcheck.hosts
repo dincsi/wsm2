@@ -1,0 +1,11 @@
+# Manually edited host list for urlcheck_scanhosts utility.
+# Parsed list, part of website-manager-2 package.
+#
+# A line may contain a simple URL to check (without white spaces).
+# Empty lines and hashmark comment lines are allowed and ignored.
+# urlcheck_scanhosts checks these URLs before active ServerNames.
+#
+# Examples:
+# www.somehost.net
+# https://somehost.somedomain/somecontent
+

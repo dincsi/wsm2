@@ -1,0 +1,13 @@
+# Crontab fragment (/etc/cron.d) - part of website-manager-2 package.
+# WSM2 initalisation at reboot
+@reboot            root	   /usr/local/bin/wsm2-init
+# Webcron service call in every minute
+*	*  * * *   webadmin	/usr/local/bin/wsm2-webcron
+# ModSecurity per-virtualhost audit log synchronisation in every 5 minutes
+0-59/5	*  * * *   root    /usr/local/bin/modsec-audit
+# Halfhourly URL check
+10,40	*  * * *   root    /usr/local/bin/urlcheck_scanhosts | /usr/local/bin/urlcheck_distlogs
+# ModSecurity concurrent audit log events cleanup once a day, late night
+00 	01 * * *   www-data	/usr/local/bin/modsec-auditclear
+# Refresh SSL certificate revoking lists (CRLs) every Sunday, late night
+30      01 * * 7   root	   /usr/local/bin/wsm2-crl-refresh

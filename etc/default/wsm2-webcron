@@ -1,0 +1,16 @@
+# Common literals for WSM2 webcron service. A shell script fragment, handle with care!
+# Part of website-manager-2 package.
+
+APACHEVHOSTSENDIR="/etc/apache2/sites-enabled"          # Directory for available virtualhosts
+DATE="/bin/date"                                        # date command call
+GREP="/bin/grep"                                        # grep command call
+MASKHTTP="^\(http\(s\)\?:\/\/\)\?"                      # SED regexp: http(s) protocol
+MASKWEB="\(\([0-9a-zA-Z_-]\)\+\.\)\+\([0-9a-zA-Z]\)\+"  # SED regexp: valid website name
+SED="/bin/sed"                                          # sed command call
+SORT="/usr/bin/sort"                                    # sort command call
+URLCHECK="/usr/local/bin/urlcheck"                      # urlcheck pathname
+WEBCRONLOG="log/webcron.log"                            # logfile relative pathname
+WEBCRONPARSER="/usr/local/bin/wsm2-webcron-parser"      # webcron parser call
+WEBCRONTAB=".htcrontab"                                 # Crontab file name for a vhost
+
+MSG_WSM_WEBCRON_WRONGURL="000 Fatal! Wrong URL"

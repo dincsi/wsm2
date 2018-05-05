@@ -1,0 +1,33 @@
+# Common literals for GeoIPFree. A shell script fragment, handle with care!
+# Part of the website-manager-2 package.
+
+# Internet data source.
+URL="http://software77.net/geo-ip?DL="
+
+# Specify (uncommenting appropriate below) if autodetection failed.
+# Fast binary working only in 32-bit x86 environment.
+#CSV_TO_TXT_SCRIPT="/usr/local/share/website-manager-2/geoipfree/geo-compute"
+# Very slow, but platform-independent shell script (amd64, etc.).
+#CSV_TO_TXT_SCRIPT="/usr/local/share/website-manager-2/geoipfree/geo-compute.sh"
+
+###################################################
+# Perhaps isn't necessary to modify anything below.
+
+CSV="1"                                         # Download code for .csv format
+CUT="/usr/bin/cut"                              # cut command call
+DAT="4"                                         # Download code for .dat format
+FINALFILE="ipscountry.dat"                      # Resulting filename
+GEODIR="/var/lib/geoipfree"                     # Database directory
+GREP="/bin/grep"                                # grep command call
+GUNZIP="/bin/gunzip"                            # gunzip command call
+TMP_DIR="/tmp"                                  # Temporary directory for wget
+TXT_DB_SCRIPT="/usr/local/share/website-manager-2/geoipfree/txt2ipct.pl"
+PERL="/usr/bin/perl"                            # perl command call
+SED="/bin/sed"                                  # sed command call
+UNAME="/bin/uname"				# uname command call
+WGET="/usr/bin/wget"                            # wget command call
+
+MSG_GEOIP_FAILED_CONVERT="GEO IP Free failed to update while running"
+MSG_GEOIP_FAILED_DOWNLOAD="GEO IP Free failed to update while downloading from"
+MSG_GEOIP_FAILED_INSERT="GEO IP Free failed to update while running "
+MSG_GEOIP_SUCCESS="GEO IP Free Successfully updated.\nThe new file is located at"

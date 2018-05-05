@@ -1,0 +1,31 @@
+# OpenSSL configuration for a local web CA request.
+# Created by website-manager-2 utility.
+
+[ req ]
+distinguished_name	= req_distinguished_name
+string_mask		= utf8only
+prompt			= no
+# Extentions to add to the request.
+req_extensions		= v3_careq
+
+[ req_distinguished_name ]
+C			= $ca_countryname
+ST			= $ca_stateorprovince
+L			= $ca_localityname
+O			= $ca_org
+OU			= $ca_orgunit
+CN			= $ca_cn
+emailAddress		= $ca_email
+
+# Extensions for a local web CA request.
+[ v3_careq ]
+basicConstraints	= critical, CA:true, pathlen:0
+nsCertType 		= sslCA
+nsComment               = "Web CA certificate"
+keyUsage 		= critical, cRLSign, keyCertSign
+# URI for revocations.
+crlDistributionPoints   = URI:http://$FQHN/CA.crl
+# PKIX recommendation.
+subjectKeyIdentifier	= hash
+# Include email address in subject alt name (PKIX).
+subjectAltName		= email:copy

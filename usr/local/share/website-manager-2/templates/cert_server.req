@@ -1,0 +1,29 @@
+# OpenSSL configuration for a local webserver certificate request.
+# Created by website-manager-2 utility.
+
+[ req ]
+distinguished_name	= req_distinguished_name
+string_mask		= utf8only
+prompt			= no
+# Extentions to add to the request.
+req_extensions		= v3_srvreq
+
+[ req_distinguished_name ]
+C			= $cert_countryname
+ST			= $cert_stateorprovince
+L			= $cert_localityname
+O			= $cert_org
+OU			= $cert_orgunit
+CN			= $cert_cn
+emailAddress		= $cert_email
+
+# Extensions for a local webserver certificate request.
+[ v3_srvreq ]
+basicConstraints	= critical, CA:false
+nsCertType 		= server
+nsComment               = "Webserver Certificate"
+keyUsage 		= critical, digitalSignature, keyEncipherment
+extendedKeyUsage	= serverAuth
+# PKIX recommendations.
+subjectKeyIdentifier	= hash
+subjectAltName		= email:copy

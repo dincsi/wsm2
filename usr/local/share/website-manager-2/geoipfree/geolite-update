@@ -1,0 +1,42 @@
+#!/bin/bash
+# Simple script to update GeoLite Country database from Internet.
+# Part of website-manager-2 package.
+
+# Common literals for standalone use (may redefined by header).
+FINALFILE="GeoIP.dat"                           # Resulting filename
+GEODIR="/var/lib/geoipfree"                     # Database directory
+GUNZIP="/bin/gunzip"                            # gunzip command call
+TMP_DIR="/tmp"                                  # Temporary directory for wget
+URL='http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz'
+WGET="/usr/bin/wget"                            # wget command call
+
+MSG_GEOIP_FAILED_DOWNLOAD="GeoLite Country database failed to update while downloading from"
+MSG_GEOIP_FAILED_UNZIP="GeoLite Country database failed to unzip."
+MSG_GEOIP_SUCCESS="GeoLite Country database successfully updated.\nThe new file is located at"
+
+# Including headers (if any).
+HEADERS="/etc/default/wsm2-geolite"
+if [ -f "$HEADERS" ]; then . $HEADERS; fi
+
+# Getting (compressed) .DAT from Internet silently.
+$WGET -O "$TMP_DIR/$FINALFILE.gz" "$URL" >/dev/null 2>&1; EXITSTATUS=$?
+if [ "$EXITSTATUS" != "0" ]; then
+    # On failure doing some cleanup and exit.
+    echo -e "$MSG_GEOIP_FAILED_DOWNLOAD $URL" >&2
+    rm "$TMP_DIR/$FINALFILE.gz" "$TMP_DIR/$FINALFILE" >/dev/null 2>&1
+    exit 1
+fi
+# On success continue with unzip.
+$GUNZIP "$TMP_DIR/$FINALFILE.gz" >/dev/null 2>&1; EXITSTATUS=$?
+if [ "$EXITSTATUS" != "0" ]; then
+    # On failure doing some cleanup and exit.
+    echo -e "$MSG_GEOIP_FAILED_UNZIP" >&2
+    rm "$TMP_DIR/$FINALFILE.gz" "$TMP_DIR/$FINALFILE" >/dev/null 2>&1
+    exit 1
+fi
+# Activating the new database and finish.
+if [ -f "$GEODIR/$FINALFILE" ]; then mv "$GEODIR/$FINALFILE" "$GEODIR/$FINALFILE.bak"; fi
+mv "$TMP_DIR/$FINALFILE" "$GEODIR/$FINALFILE"
+echo -e "$MSG_GEOIP_SUCCESS $GEODIR/$FINALFILE" >&2
+rm "$TMP_DIR/$FINALFILE.gz" "$TMP_DIR/$FINALFILE" >/dev/null 2>&1
+exit 0

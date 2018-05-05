@@ -1,0 +1,109 @@
+# Global Apeche-2 settings - part of website-manager-2 package.
+# /etc/apache2/conf-available/wsm2-defaults (Apache 2.4)
+
+# Server HTTP response header.
+# Set to one of:  Full | OS | Minimal | Minor | Major | Prod
+ServerTokens Prod
+
+# Server signature on generated pages.
+# Set to one of:  On | Off | EMail
+ServerSignature Off
+
+# Disable TRACE method.
+# Set to one of:  On | Off | extended
+TraceEnable Off
+
+# Default Linux user and group.
+<IfModule mpm_itk_module>
+    AssignUserId www-data www-data
+</IfModule>
+
+# Multiuser (mpm-itk) lockfiles (writable for anyone within www-data group).
+Mutex file:/var/lock/apache2-mpm-itk mpm-accept
+<IfModule mod_rewrite.c>
+    Mutex file:/var/lock/apache2-mpm-itk/ rewrite-map
+</IfModule>
+<IfModule mod_dav_fs.c>
+    DavLockDB /var/lock/apache2-mpm-itk/DavLock
+</IfModule>
+
+# Logfiles.
+CustomLog /var/log/apache2/access.log vhost_combined
+ErrorLog /var/log/apache2/error.log
+
+# Disallow user directories.
+<IfModule mod_userdir.c>
+    UserDir disabled
+</IfModule>
+
+# Server status enabled w/o restrictions for Munin.
+<Location /server-status>
+    <IfModule security2_module>
+        SecRuleEngine Off
+    </IfModule>
+</Location>
+
+# Restricted access by default.
+<Directory />
+    Options None
+    AllowOverride None
+    ## Take care, may break .htaccess evaluation!
+    ## AllowOverrideList None
+    Require all denied
+</Directory>
+
+<Directory /var/www>
+    Options None
+    AllowOverride None
+    ## Take care, may break .htaccess evaluation!
+    ## AllowOverrideList None
+    Require all denied
+    # DirectoryIndex restrictions
+    <IfModule mod_dir.c>
+      <IfModule mod_php5.c>
+        # Indirectly disallow CGI, Perl, etc.
+        DirectoryIndex index.html index.php index.xhtml index.htm
+      </IfModule>
+      <IfModule !mod_php5.c>
+        # Disable index.php also (prevents forbidden autoindex page).
+        DirectoryIndex index.html index.xhtml index.htm
+      </IfModule>
+    </IfModule>
+</Directory>
+
+# Disallow PHP by default.
+<IfModule mod_php5.c>
+    php_admin_flag engine off
+</IfModule>
+# Prevents downloading PHP scripts and sources when engine isn't loaded.
+<IfModule !mod_php5.c>
+    <FilesMatch "\.ph(p[345]?|t|tml|ps)$">
+	Require all denied
+    </FilesMatch>
+</IfModule>
+
+# Disallow proxying by default.
+<IfModule mod_proxy.c>
+    ProxyRequests Off
+    <Proxy *>
+	Require all denied
+    </Proxy>
+</IfModule>
+
+# Expiry defaults.
+<IfModule mod_expires.c>
+    ExpiresActive on
+    ExpiresDefault "access plus 1 hours"
+</IfModule>
+
+# GeoIP defaults (overrides maintainer's configuration).
+<IfModule mod_geoip.c>
+    GeoIPEnable Off
+    GeoIPDBFile /var/lib/geoipfree/GeoIP.dat
+</IfModule>
+
+# Enhance the forward secrecy support.
+# See https://community.qualys.com/blogs/securitylabs/2013/06/25/ssl-labs-deploying-forward-secrecy
+<IfModule mod_ssl.c>
+    SSLHonorCipherOrder on
+</IfModule>

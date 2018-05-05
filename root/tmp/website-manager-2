@@ -1,0 +1,33 @@
+#!/bin/bash
+# Small script to build .tgz distributable.
+# Part of vebsite-manager-2 package.
+
+DATE=`date '+%Y%m%d%H%M%S'`
+tar czvf `basename $0`-$DATE.tgz \
+    --exclude=/etc/apache2/modsecurity/currentversion \
+    --exclude=/etc/apache2/modsecurity/rules \
+    --exclude=/etc/apache2/modsecurity/modsecurity-crs/* \
+    --exclude=/usr/local/bin/awstats*.pl \
+    --exclude=/var/lib/geoipfree/* \
+    --exclude=/var/lib/mod_security/AuditLogDir/* \
+    --exclude=/var/lib/mod_security/SecDataDir/* \
+    --exclude=/var/lib/mod_security/SecTmpDir/* \
+    /etc/awstats/awstats.conf.common \
+    /etc/awstats/awstats.conf.template \
+    /etc/cron.d/wsm2 \
+    /etc/cron.daily/awstats \
+    /etc/cron.weekly/geoipfree-update \
+    /etc/cron.weekly/geolite-update \
+    /etc/cron.weekly/modsec-update \
+    /etc/cron.weekly/modsec-update-owasp \
+    /etc/default/wsm2* \
+    /etc/logrotate.d/wsm2 \
+    /usr/local/bin/awstats* \
+    /usr/local/bin/modsec* \
+    /usr/local/bin/urlcheck* \
+    /usr/local/bin/website-manager* \
+    /usr/local/bin/wsm2* \
+    /usr/local/share/website-manager-2 \
+    /var/lib/geoipfree \
+    /root/tmp/`basename $0`
+chmod 600 `basename $0`-$DATE.tgz

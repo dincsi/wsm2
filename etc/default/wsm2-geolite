@@ -1,0 +1,18 @@
+# Common literals for GeoLite Country. A shell script fragment, handle with care!
+# Part of the website-manager-2 package.
+
+# Internet data source.
+URL='http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz'
+
+###################################################
+# Perhaps isn't necessary to modify anything below.
+
+FINALFILE="GeoIP.dat"                           # Resulting filename
+GEODIR="/var/lib/geoipfree"                     # Database directory
+GUNZIP="/bin/gunzip"                            # gunzip command call
+TMP_DIR="/tmp"                                  # Temporary directory for wget
+WGET="/usr/bin/wget"                            # wget command call
+
+MSG_GEOIP_FAILED_DOWNLOAD="GeoLite Country database failed to update while downloading from"
+MSG_GEOIP_FAILED_UNZIP="GeoLite Country database failed to unzip."
+MSG_GEOIP_SUCCESS="GeoLite Country database successfully updated.\nThe new file is located at"

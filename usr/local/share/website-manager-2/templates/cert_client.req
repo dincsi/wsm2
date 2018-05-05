@@ -1,0 +1,29 @@
+# OpenSSL configuration for a common web client (browser) certificate request.
+# Created by website-manager-2 utility.
+
+[ req ]
+distinguished_name	= req_distinguished_name
+string_mask		= utf8only
+prompt			= no
+# Extentions to add to the request.
+req_extensions		= v3_clireq
+
+[ req_distinguished_name ]
+C			= $cert_countryname
+ST			= $cert_stateorprovince
+L			= $cert_localityname
+O			= $cert_org
+OU			= $cert_orgunit
+CN			= $cert_cn
+emailAddress		= $cert_email
+
+# Extensions for a common web client (browser) certificate request.
+[ v3_clireq ]
+basicConstraints	= critical, CA:false
+nsCertType 		= client
+nsComment               = "Web Client Certificate"
+keyUsage 		= critical, nonRepudiation, digitalSignature, keyEncipherment
+extendedKeyUsage	= clientAuth
+# PKIX recommendations.
+subjectKeyIdentifier	= hash
+subjectAltName		= email:copy

@@ -1,0 +1,328 @@
+Website-manager-2 (wsm2) is a simple command-line toolkit to setup Apache-2 webserver in a relative safe manner with ModSecurity and AwStats on Debian then create and manage static and PHP websites.
+
+Main features:
+* public webservice via http and via reverse proxied https;
+* simple certificate handling for per-virtualhost server and client certificates;
+* enhanced ModSecurity support with OWASP core rule set updates;
+* per-virtualhost configurable https certificates via server name indication;
+* per-virtualhost authenticated developer access, files upload via https DAV;
+* per-virtualhost authenticated developer access to Apache/PHP logs via https;
+* per-virtualhost webcron facility;
+* per-virtualhost authenticated access to daily updated AwStats web statistics via https;
+* easy to use command line virtualhost creation, saving (incl. docroot, logs, stats) and removal;
+* easy to use command line per-virtualhost Apache virtual users management (htpasswd, users, groups);
+* periodic checking of all virtualhosts accessibility and error notification;
+* humbly geolocation support;
+* lot of tricks and minor enhancements :-).
+wsm2 derived from Apache 1.3-compatible old wsm(1) and licensed under GNU/GPL v2+.
+
+Humbly ASCII-art about static/PHP web delivery and storage permissions:
+
+                      [ADMINISTRATIVE WEB SERVICE     ]  [PUBLIC WEB SERVICE            ]
+Internet webmaster => [Apache 443: (webadmin:www-data)]  [Apache 80: (www-data:www-data)] <= Internet visitor
+                                WebDAV  |       \-- (proxy) -->  BROWSE    |
+                                        V                                  V
+[WEB storage     webmaster's upload perms    web services' (e.g PHP) upload perms
+[ (/var/www)     D: webadmin:www-data 2750 | www-data:www-data 2770 + acl: -d g::rwX (= force group rw inside) ]
+[                F: webadmin:www-data  640 | www-data:www-data  660 + acl: group rw  (= webadmin is rw)        ]
+
+
+INSTALLATION
+Read INSTALL.howto before doing anything! - please :-)
+
+USAGE
+Issue 'wsm2 | less' command as root, see help (sorry).
+
+AUTHOR
+Zoltán Kovács <kzoli@kzoli.hu> (Hungary - sorry about my terrible English)
+Hungarian Wiki page (cookbook) about Debian administration: http://admin.wiki.kzoli.hu/
+
+CREDITS
+Special thanks to Attila Garancsi and Gyula Annár.
+
+DISCLAIMER
+wsm2 distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY.
+
+CHANGELOG
+2017-03-26 v2.6.6 (NOT tested on Debian Squeeze, which is deprecated!)
+mod: The modsec-update-owasp is now compatible with ModSecurity CRS 3.x ruleset.
+     Patched for https://github.com/SpiderLabs/owasp-modsecurity-crs/issues/651
+     The wsm2 --configure call also modified. Affects Apache 2.4 only.
+mod: A wget parameter (--tries=1) hardcoded into urlcheck to avoid ten repetitive
+     webcron calls on error or on timeout.
+mod: Improved canonical link headers, now isn't added to the canonical host hits.
+     TODO: proper handling the http/https protocol mismatch which is simply
+     ignored now. Affects Apache 2.4 only.
+mod: Added the ServerLimit directive to MPM Prefork local settings consistently
+     with the MaxRequestWorkers value, which was raised to 256 (the Apache 2.4
+     default). Affects Apache 2.4 only.
+fix: Added a LimitUIDRange directive to MPM Prefork local settings, which seems
+     to be necessary in Apache 2.4 for email sending from PHP - see:
+     http://blog.gaiterjones.com/send-php-mail-ubuntu-upgrade/
+fix: A condition for request headers added before https->http proxy rewrite in 
+     Apache 2.4 https configuration. The PHP logtail now works in https-enforced
+     vhosts also.
+fix: Added a size limit to stream_get_contents call in wsm2-logtail.php to avoid
+     memory exhaustion when the log fills rapidly.
+fix: Inclusion of Show* directives into /etc/awstats/awstats.conf.common file
+     makes the missing statistic subpages now generated.
+fix: Modified wsm2-webcron.sh does not send error messages in every minute if
+     find an invalid symlink (e.g mcedit lockfile) in /etc/apache2/sites-enabled
+     directory.
+fix: The wsm2 --configure call now does not overwrite the already existing
+     99-wsm2-php5.ini configuration file.
+fix: Deprecated (dead) see also links in robots.txt template were updated.
+
+2016-05-03 v2.6.5
+new: Ajax and JQuery-based https logtail PHP utility for developers with
+     administrative (same as WebDAV) authentication. This feature enables
+     real-time log watching instead of downloading them repeatedly.
+     Requires installed PHP, of course. Experimental, handle with care!
+new: Commented forensic log entries in http/https template.
+new: Canonical header for SEO purposes (indicating same content accessible
+     by multiple URLs). Experimental feature, isn't active by default and
+     available only for Apache 2.4. Handle with care!
+mod: Hiding PHP sources, if the module isn't installed or isn't enabled
+     (within http configuration only - DAV isn't affected).
+mod: During wsm2 --configure R/O access added for Debian's backup group (disk)
+     to the web root folder. Thereafter Amanda may make backup the virtualhosts
+     separately. Warning: comes into effect during a fresh install only! On
+     upgrade execute 'setfacl -m g:disk:rx /var/www' manually (as root).
+fix: Consistent http/php max_execution_time and https ProxyTimeout values.
+fix: Consistent http/php post_max_size and http/php upload_max_filesize
+     and https SSLRenegBufferSize values on area protected with client
+     certificates (only for Apache 2.4).
+fix: Error messages from awstats and modsecurity cron jobs if wsm2 installed,
+     but not yet configured.
+
+2015-06-16 v2.6.4
+new: Logrotate job for /log/*/*.log files (expected application's logfiles,
+     may symlinked from somewhere writable for www-data).
+fix: The wsm2 -cw call now uses the correct http.conf.X template in Debian
+     Squeeze and Wheezy.
+fix: A typo in log entry about Apache vhost configuration creating.
+
+2015-05-22 v2.6.3
+new: A weekly cron job to refresh the SSL client certificate revoking lists
+     for virtualhosts, generated previously by "wsm2 -cwca" call (if any).
+mod: All BrowserMatch and some SetEnvIf directives were changed to SetEnvIfNoCase
+     in http.conf for all versions.
+fix: Invalid BrowserMatch/SetEnvIf string for Dreamweaver was fixed in http.conf
+     for all versions.
+fix: An unnecessary AllowOverrideList directive was removed from upload folder
+     definition in http.conf (only for Apache 2.4).
+
+2015-04-23 v2.6.2
+new: Buggy browser section in http.conf for http also.
+new: The redirect-carefully directive was added for Dreamweaver in http.conf.
+mod: The nokeepalive directive was added optionally for all IE browsers in
+     http.conf for http and https (Ajax problem: network error 0x2ef3).
+new: Added SSLRenegBufferSize directive in Apache 2.4 http.conf only, for
+     https client-authenticated section, to enable PHP upload of files larger
+     than the 128K default value. This value must be equal to PHP upload limit
+     and maximum POST size (10 MB by default, in wsm2).
+
+2015-04-02 v2.6.1
+new: Placeholders for application-specific rewrites and aliases in http.conf.*
+     templates.
+mod: The general-purpose rewrites now precede the virtualhost's directives in
+     http.conf.* templates. This reflects the order of the processing better.
+mod: The DreamWeaver now treated as buggy browser, which needs careful redirect
+     in https DAV section of http.conf template (only for Apache 2.4).
+fix: Removed colons before the port number from X-Forwarded-Port headers, added on
+     automatic https -> http proxy calls, in http.conf.* templates.
+
+2015-03-16 v2.6 - many changes, take care!
+     This is a major upgrade, beacause in Debian Jessie, the Apache webserver 
+     was upgraded to 2.4.x (http://httpd.apache.org/docs/2.4/upgrading.html).
+     A number extension (.6 for Squeeze, .7 for Wheezy, .8 for Jessie) indicates
+     the version-dependent configurations and template files. wsm2 --configure
+     uses the appropriate automatically.
+new: Client certificate authentication for an URI path or the whole website in
+     Apache 2.4 (Debian Jessie) http.conf template. With prepared settings e.g.
+     you may force to https the WordPress admin URI (/wp-admin) and limit access
+     they for him, who installed the password-protected /client.p12 certificate
+     into their browser. This makes strangers' access (e.g. dictionary attacks)
+     difficult very much. Protecting the whole site may make the operation safer
+     for intranet-style, old and by design vulnerable web services.
+new: Commented alias directive in http.conf files to revert the /icons/ alias
+     optionally. This alias is set by default in alias module configuration,
+     and need to show icons in fancy directory index. You may reverting, only
+     if your website needs an own /icons/ folder.
+mod: Certificate handling becomes more sophisticated.
+     You may specify an existing certificate as 3rd parameter of "wsm2 -cw" call.
+     If this is a web certificate, the virtualhost will use it. If this is a CA
+     certificate, that will be used to sign a newly created web certificate. If
+     you omit this parameter, a simple, self-signed certificate will be created
+     (changed default behavior).
+     A new call, the "wsm2 -cwca" was introduced to order an own, local CA, that
+     will be created and will be used to sign a newly created web certificate.
+     The common client certificate created then only, if a CA was involved, not
+     when an existing or self-signed web certificate was used.
+     A new call, the "wsm2 --revoke" was introduced to revoke certificates
+     signed by a local or global CA. The certificate revocation list (CRL) now
+     really working 
+     The "wsm2 --cert" call may be used to refresh the website certificate e.g
+     on expiry. If a CA was involved, this call revokes the actual certificate.
+     When a CA was involved, With (new) "wsm2 --client" call you may issue many
+     client certificates, subjected to some email addresses, eligibles for the
+     client certificate authentication. This call may be used to refresh a
+     previously issued client certificate also.
+     Technically, the certificates are using 2048 bits RSA keys, and are signed
+     with SHA256 digest algorythm. A local CA itself, uses 4096 bits RSA keys.
+     The self-signed certificates aren't CA certificates now.
+mod: SSL enhancements. In Debian Jessie, our websites now are getting the grade A
+     at https://www.ssllabs.com/ssltest/analyze.html (with a real certificate).
+     In Debian Squeeze or Wheezy, the grade is A-, but https is now protected
+     against https://security-tracker.debian.org/tracker/CVE-2014-3566 (POODLE).
+     Warning: because of using strong ciphers only, the IE6 and Java 6 SSL client
+     support was dropped.
+mod: Storage for updated ModSecurity CRS was moved to /etc/modsecurity in Jessie.
+mod: The newly created workplace for ModSecurity named as /var/lib/modsecurity
+     instead /var/lib/mod_security. No change if this workplace already exists.
+mod: Geo IP Free updater tries to download the precompiled .DAT update. Only on
+     failure will try the .CSV download and local compilation.
+mod: The /etc/awstats/awstats.conf.common now contains only the non-default and/or
+     vital AwStats parameters. The AwStats tooltips plugin now loaded by default.
+     The /etc/awstats/awstas.conf.local file also included into every virtualhosts
+     AwStats configuration, via /etc/awstats/awstats.conf.template.
+mod: PHP changes: more restrictions in disabled_functions, the default time zone
+     now is calculated, not hardwired in wsm2-php5.ini template (for Debian
+     Jessie and above only).
+mod: Deprecated PHP4 (IfModule) directives were removed from all http templates.
+mod: XHTML 1.0 DTD was introduced in the default webpage (index.html) template,
+     which is now passes HTML Tidy tests.
+fix: The ModSecurity concurrent log serializer worker (modsec-auditgen.sh) now
+     refuses starting, when another instance is already running with the same
+     parameters.
+fix: False alert about orphaned AwStats configuration on disabled (but existing)
+     Apache virtualhosts was eliminated in awstats_scanhosts script, invoked
+     from cron.daily.
+fix: Unnecessary AwStats configuration for 12th month of the current year isn't
+     created now by awstats_refreshpages script, at every 1st day of a month.
+fix: Handling certificates, the http://ip-api.com/ was introduced as geolocation
+     web service, instead of the disrupted http://www.geobytes.com/IpLocator.htm
+fix: SED regexp in urlcheck_distlogs.sh now handles the localpart of URI checked
+     (e.g www.myweb.com/test.html now logged in the www.myweb.com-urlcheck.log).
+
+2014-02-15 v2.5.1
+mod: https->http proxy requests are'nt logged into access.log. Originally from: 
+     http://www.techstacks.com/howto/log-client-ip-and-xforwardedfor-ip-in-apache.html
+mod: optional "forcing http->https" rewrite now checks the X-Forwarded-For header
+     so isn't necessary to specify server's own (proxy) IP here.
+mod: curl_exec also disabled in wsm2-php5.ini.
+fix: appropriate regexp in awstats and log handler rewrites, and LocationMatch 
+     within http/https template.
+
+2013-09-12 v2.5
+new: wsm2 -cw sets up a minimal, by-virtualhost local certificate authority (CA) 
+     for server side website certificate and a password-protected, common client 
+     certificate to protect special pages (e.g. administrative login forms against
+     distributed dictionary attacks) at Apache core (not web application) level.
+     This deprecates common server certificate usage and sets up Apache to apply
+     the Server Name Indication by default.
+     Note: client certification feature is experimental now - be careful!
+new: wsm2 -ca, -cert and -sign commands to certificate handling.
+new: Switch to ModSecurity OWASP Core Rule Set with totally rewritten updater.
+     Old updater will be used for Squeeze(-), new for Wheezy(+) automatically.
+new: Current wsm2 version number added to wsm2-created Apache configurations.
+mod: The big wsm2 header file now separated to wsm2 (small, site-specific) and
+     wsm2-common (big, common headers) files.
+mod: Rewritten https->http proxy rewrite rules, X-Forwarded headers were added.
+mod: Per-virtualhost subfolders in /etc/apache2/auth.d - old structure without
+     subfolders remains compatible.
+fix: ModSecurity common errata ruleset now considered also.
+fix: Used "$@" instead of $* in website-manager-2.sh for command-line parameters.
+
+2013-07-09 v2.4.1
+new: A default virtualhost FQHN may be specified replacing previously used fully 
+     qualified hostname of the server machine.
+fix: DAV lock folder recreated at every reboot from wsm2 cronjob, according to
+     FHS 3.0 introduced in Wheezy (/var/lock moved to /run and purged at reboot).
+
+2013-04-04 v2.4
+new: Debian Wheezy compatibility. A number extension (.6 for Squeeze, .7 for
+     Wheezy) indicates maior version dependent template files. wsm2 --configure 
+     uses appropriate automatically.
+new: The http template now prepared for Server Name Indication (per-virtualhost
+     https certificates). Predefined store of per-virtualhost certs is Apache
+     authentication folder. Command wsm2 --saveweb saves these certs also.
+mod: Dropped (not tested) Debian Lenny compatibility.
+mod: Different php.ini overrides for Squeeze and Wheezy according to removal of 
+     safe mode in PHP 5.4 that Wheezy contains.
+mod: PHP date.timezone in php.ini override for Wheezy (avoiding UTC timed PHP log).
+mod: ModSecurity auditlog relevance restricted to 5xx errors (4xx dropped from here).
+mod: ModSecurity is now Off (not Detection Only) in https configuration preventing
+     exhaustive audit log production.
+mod: ModSecurity is now Off where PHP is explicite disabled in http.conf template.
+fix: Commented SymLinksIfOwnerMatch options in http template according to
+     changed ownership check as documented in Apache 2.2.17 changelog.
+fix: ModSecurity errata ruleset now considered.
+
+2012-02-09 v2.3.1
+fix: Errors of urlcheck called from web cron are redirected to /dev/null
+     instead /home/webadmin files.
+mod: ModSecurity disabled in download and upload folders.
+
+2011-12-12 v2.3
+new: Web cron service for all active virtualhosts.
+     Urlcheck calls scheduled in docroot/.htcrontab being executed via
+     system cron job. Results collected in a new docroot/log/webcron.log file.
+new: ModSecurity logging method changed to concurrent, mutex issue resolved.
+     Per-virtualhost ModSecurity logs (*-modsec.log and *-audit.log).
+     Audit log entries serialized by a cron job running in every 5 mins.
+     Audit log events folder cleaned up once a day.
+     Unusable wsm2-modsec-auditlogger removed from the package.
+new: Platform autodetection in geoipfree-update script.
+mod: PHP magic quotes are disabled by default.
+mod: PHP error_reporting now excludes deprecated levels.
+mod: Unusual HTTP methods via https aren't logged. ModSecurity running
+     DetectionOnly on https and PROPDIND (DAV) generated lot of loglines.
+fix: urlcheck-scanhosts isn't doubles URL calls.
+fix: Forgotten geo-compute.sh /bin/bash sha-bang (for Squeeze) fixed.
+fix: MIME octet-stream isn't forced to default page in download folder.
+fix: ModSecurity 2.5 "Request too large" errors fixed.
+fix: ModSecurity 2.5 "PCRE limits exceeded" wanings worked around.
+
+2011-02-04 v2.2.1
+fix: urlcheck.sh now executable by anyone.
+new: wsm2-php5.ini template for PHP 5.3 (Squeeze) main configuration overrides.
+new: wsm2 --configure tries to install wsm2-php5.ini also (beware on Lenny!).
+
+2010-11-08 v2.2.0 - 1st Debian Squeeze (currently testing) compatible version.
+fix: GeoIP Free download URL in wsm2-geoipfree and in geoipfree-update script.
+Modifications according to Debian Squeeze (backward compatible with Lenny):
+fix: all scripts got /bin/bash sha-bang because /bin/sh default has been changed.
+fix: added new AwStats Perl scripts source directory in --configure.
+fix: description of severe ModSecurity 2.5 bug fixing in INSTALL.howto.
+new: /etc/apache2/modsecurity contains (linked or native) ModSecurity components.
+new: ModSecurity 2.5 ruleset compatibility settings in wsm2-modsec template.
+new: ModSecurity 2.5 ruleset (semi)automatic non-destructive weekly update.
+
+2010-03-17 v2.1.0
+new: GeoLite Country database (http://www.maxmind.com/app/mod_geoip) support.
+new: some common used PHP settings in http.conf (commented).
+new: INSTALL.howto - a draft install guide.
+fix: hardwired vhost changed to %{HTTP_HOST} in https ProxyPassReverse.
+fix: missing hidden ('dot') files in -sw created docroot and binaries archive.
+fix: forbidden autoindex in download folder due index.php item on DirectoryIndex 
+     when mod_php5 isn't loaded therefore access to any PHP files is disallowed.
+fix: a ModSec rule (preventing requests to numeric IP) removal added in http.conf.
+
+2010-01-26 v2.0.4
+fix: log $(mkdir --verbose ... 2>&1) to log messages about folder creating.
+
+2009-10-26 v2.0.3
+fix: A typo in urlcheck_scanhosts prevents interpreting "NOCHECK" in urlcheck.exceptions.
+
+2009-09-24 v2.0.2
+fix: ModSec disabled on /server-status (Munin requests).
+
+2009-09-18 v2.0.1
+Initial public version of wsm2. Version number started at 2.x highlighting Apache-2 (only) compatibility.
+
+TODO
+* Consider delegating some functions from root to webadmin Linux account.
+* Adminstrator's manual.
+* Real logdaemon (not an asynchronous cron job) to receive ModSecurity auditlog and serialize them.
+* GeoLite IPv6 database handling.

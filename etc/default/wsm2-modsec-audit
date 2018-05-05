@@ -1,0 +1,35 @@
+# Common literals for ModSecurity. A shell script fragment, handle with care!
+# Part of the website-manager-2 package.
+
+AUDIT_HANDLE=1						# Set 0 to disable audit log
+							# serialize functions.
+# Perhaps you don't need change any items below.
+
+APACHELOGDIR="/var/log/apache2"				# Root directory for Apache logs
+APACHEVHOSTSENDIR="/etc/apache2/sites-enabled"          # Directory for available vhosts
+if [ -d "/var/lib/mod_security/AuditLogDir" ]; then	# wsm2 before 2.6 compatibility
+    AUDITLOGDIR="/var/lib/mod_security/AuditLogDir"     # Audit events folder (old)
+else							# wsm2 2.6+
+    AUDITLOGDIR="/var/lib/modsecurity/AuditLogDir"      # Audit events folder (new)
+fi
+BASENAME="/usr/bin/basename"                            # basename command call
+DATE="/bin/date"                                        # date command call
+EXIT_ERR="1"                                            # Exit code on error
+EXIT_SUCC="0"                                           # Exit code on success
+GREP="/bin/grep"                                        # grep command call
+MODSEC_AUDITGEN="/usr/local/bin/modsec-auditgen"        # modsec-auditgen script call
+PS="/bin/ps"                                            # ps command call
+SED="/bin/sed"                                          # sed command call
+SORT="/usr/bin/sort"                                    # sort command call
+TAIL="/usr/bin/tail"					# tail command call
+WC="/usr/bin/wc"                                        # wc command call
+WHOAMI="/usr/bin/whoami"                                # whoami command call
+WSMLOGFILE="/var/log/wsm2.log"                          # Logfile for wsm2 itself
+
+MSG_WSM_MODSEC_AGENERR="Error serializing audit log:"
+MSG_WSM_MODSEC_MISSCAT="Auditlog catalog isn't found:"
+MSG_WSM_MODSEC_NEWAUDIT="New audit log found:"
+MSG_WSM_MODSEC_NEWCAT="New catalog found:"
+MSG_WSM_MODSEC_NOCREACAT="Unable to create serialized auditlog:"
+MSG_WSM_MODSEC_ROOTNEED="Must be root."
+MSG_WSM_MODSEC_USAGE="Usage: $0 auditlog_catalog_file_pathname auditlog_file_pathname"

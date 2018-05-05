@@ -1,0 +1,98 @@
+#!/bin/bash
+# Simple script to update GeoIPFree database from Internet.
+# Origined from geoip.sh by Chris Gage.
+# Part of website-manager-2 package.
+
+# Common literals for standalone use (may redefined by header).
+CSV="1"						# Download code for .csv format
+CUT="/usr/bin/cut"				# cut command call
+DAT="4"						# Download code for .dat format
+FINALFILE="ipscountry.dat"                      # Resulting filename
+GEODIR="/var/lib/geoipfree"                     # Database directory
+GREP="/bin/grep"				# grep command call
+GUNZIP="/bin/gunzip"                            # gunzip command call
+TMP_DIR="/tmp"                                  # Temporary directory for wget
+TXT_DB_SCRIPT="/usr/local/share/website-manager-2/geoipfree/txt2ipct.pl"
+PERL="/usr/bin/perl"                            # perl command call
+SED="/bin/sed"					# sed command call
+UNAME="/bin/uname"				# uname command call
+URL="http://software77.net/geo-ip?DL="		# Download URL
+WGET="/usr/bin/wget"                            # wget command call
+
+# Included binary works only in x86 environment.
+if [ $($UNAME -m) = 'i686' ]; then
+    CSV_TO_TXT_SCRIPT="/usr/local/share/website-manager-2/geoipfree/geo-compute"
+else
+    # Platform-independent but slow shell script.
+    CSV_TO_TXT_SCRIPT="/usr/local/share/website-manager-2/geoipfree/geo-compute.sh"
+fi
+
+MSG_GEOIP_FAILED_CONVERT="GEO IP Free failed to update while running"
+MSG_GEOIP_FAILED_DOWNLOAD="GEO IP Free failed to update while downloading from"
+MSG_GEOIP_FAILED_INSERT="GEO IP Free failed to update while running "
+MSG_GEOIP_SUCCESS="GEO IP Free successfully updated.\nThe new file is located at"
+
+# Including headers (if any).
+HEADERS="/etc/default/wsm2-geoipfree"
+if [ -f "$HEADERS" ]; then . $HEADERS; fi
+
+# Private settings.
+INFILE="ips.csv"				# CSV source file
+TEMPFILE="raw_temp.\$\$"                        # Temporary file name
+TEMPFILE2="raw_temp2.\$\$"                      # Temporary file name
+
+# Try to get .DAT file from Internet silently.
+rm "$TMP_DIR/$FINALFILE" > /dev/null 2>&1
+$WGET -O "$TMP_DIR/$FINALFILE" "$URL$DAT" >/dev/null 2>&1; EXITSTATUS=$?
+
+# On failure try to get .CSV and compile the .DAT here.
+# Note: this is a reminiscent code, the .DAT itself wasn't available yet earlier from the web.
+if [ "$EXITSTATUS" != "0" ]; then
+    echo -e "$MSG_GEOIP_FAILED_DOWNLOAD $URL$DAT" >&2
+    rm "$TMP_DIR/$FINALFILE" >/dev/null 2>&1
+    # Try to get (compressed) source CSV from Internet silently.
+    rm "$TMP_DIR/$INFILE.gz" >/dev/null 2>&1
+    $WGET -O "$TMP_DIR/$INFILE.gz" "$URL$CSV" >/dev/null 2>&1; EXITSTATUS=$?
+    if [ "$EXITSTATUS" != "0" ]; then
+	# On failure doing some cleanup and exit.
+	echo -e "$MSG_GEOIP_FAILED_DOWNLOAD $URL$CSV" >&2
+	rm "$TMP_DIR/$INFILE.gz" "$TMP_DIR/$INFILE" "$TMP_DIR/$TEMPFILE" "$TMP_DIR/$TEMPFILE2" "$TMP_DIR/$FINALFILE" >/dev/null 2>&1
+	exit 1
+    fi
+    # On success continue with processing.
+    $GUNZIP "$TMP_DIR/$INFILE.gz" >/dev/null 2>&1
+    # Parsing IP_FROM, IP_TO, COUNTRY_CODE into a temporary file.
+    $GREP -v "^#" "$TMP_DIR/$INFILE" | $SED 's/\"//g' | $CUT -d, -f1,2,5 > "$TMP_DIR/$TEMPFILE2"
+    # Converting numbers to IP.IP.IP.IP format via C program
+    # or optionally - if binary isn't running - via shell script.
+    (
+    echo "$TMP_DIR/$TEMPFILE2"
+    echo "$TMP_DIR/$TEMPFILE"
+    ) 2>&1 | $CSV_TO_TXT_SCRIPT
+    EXITSTATUS=$?
+    if [ "$EXITSTATUS" != "0" ]; then
+	# On failure doing some cleanup and exit.
+	echo -e "$MSG_GEOIP_FAILED_CONVERT $CSV_TO_TXT_SCRIPT" >&2
+	rm "$TMP_DIR/$INFILE.gz" "$TMP_DIR/$INFILE" "$TMP_DIR/$TEMPFILE" "$TMP_DIR/$TEMPFILE2" "$TMP_DIR/$FINALFILE" >/dev/null 2>&1
+	exit 1
+    fi
+    # Inserting into database file via Perl script.
+    $PERL $TXT_DB_SCRIPT "$TMP_DIR/$TEMPFILE" "$TMP_DIR/$FINALFILE" >/dev/null 2>&1
+    EXITSTATUS=$?
+    if [ "$EXITSTATUS" != "0" ]; then
+	# On failure doing some cleanup and exit.
+	echo -e "$MSG_GEOIP_FAILED_INSERT $TXT_DB_SCRIPT" >&2
+	rm "$TMP_DIR/$INFILE.gz" "$TMP_DIR/$INFILE" "$TMP_DIR/$TEMPFILE" "$TMP_DIR/$TEMPFILE2" "$TMP_DIR/$FINALFILE" >/dev/null 2>&1
+	exit 1
+    fi
+fi
+
+# Here we have a fresh .DAT database, let's use it.
+if [ -f "$GEODIR/$FINALFILE" ]; then
+    mv "$GEODIR/$FINALFILE" "$GEODIR/$FINALFILE.bak"
+fi
+mv "$TMP_DIR/$FINALFILE" "$GEODIR/$FINALFILE"
+echo -e "$MSG_GEOIP_SUCCESS $GEODIR/$FINALFILE" >&2
+# Doing some cleanup and finish.
+rm "$TMP_DIR/$INFILE.gz" "$TMP_DIR/$INFILE" "$TMP_DIR/$TEMPFILE" "$TMP_DIR/$TEMPFILE2" "$TMP_DIR/$FINALFILE" >/dev/null 2>&1
+exit 0

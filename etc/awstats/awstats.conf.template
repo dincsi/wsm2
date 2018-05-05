@@ -1,0 +1,18 @@
+# AwStats configuration for $ServerName
+# Created by website-manager-2 toolkit at $datetime
+
+LogFile="$logfile"
+SiteDomain="$ServerName"
+
+# Known hosts within site domain
+# You may use regular expressions: REGEX[^.*\.myserver\.com$]
+HostAliases="$ServerName localhost 127.0.0.1 127.0.1.1"
+
+# Excluding own IPs
+SkipHosts="$SERVERIPS"
+
+# Including common setup
+Include "/etc/awstats/awstats.conf.common"
+Include "/etc/awstats/awstats.conf.local"
+
+# Extra setup written manually

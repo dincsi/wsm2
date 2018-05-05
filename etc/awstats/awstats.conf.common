@@ -1,0 +1,115 @@
+# AwStats common setup - part of website-manager-2 package.
+# Contains only the non-default and/or vital parameters.
+# See /usr/share/doc/awstats/html/awstats_config.html for defaults.
+# See /etc/awstats/awstats.conf for Debian-recommended values.
+
+# Log type: weblog.
+LogType=W
+# Log format: Apache native combined log.
+LogFormat=1
+# Field separator within a log line.
+LogSeparator=" "
+
+# Some paths.
+DirData="/var/lib/awstats"
+DirCgi="/awstats"
+DirIcons="/awstats/icon"
+
+# We don't use CGI, the report pages are static and were generated
+# periodically via cronjob.
+AllowToUpdateStatsFromBrowser=0
+
+# Report format (xhtml or html).
+BuildReportFormat=html
+
+# No permissions for everyone granted on AWStats database.
+SaveDatabaseFilesWithPermissionsForEveryone=0
+
+# Default index page names used for the web server.
+DefaultFile="index.php index.php5 index.html index.htm INDEX.HTM"
+
+# Here a list of kind of url (file extension) that must be counted as
+# "Hit only" and not as a "Hit" and "Page/Download".
+NotPageList="css js class gif jpg jpeg png bmp ico rss xml swf"
+
+# HTTP response codes treated as successfull hit.
+ValidHTTPCodes="200 304"
+
+# In URL links, "?" char is used to add parameter's list in URLs.
+URLQuerySeparators="?;"
+
+# Don't use URL parameters to differ web pages.
+URLWithQuery=0
+URLWithQueryWithOnlyFollowingParameters=""
+URLWithQueryWithoutFollowingParameters=""
+
+# Referrer URLs are cleaned from the query string.
+URLReferrerWithQuery=0
+
+# Warnings on setup are enabled only.
+WarningMessages=1
+ErrorMessages=""
+DebugMessages=0
+
+# To help you to detect if your log format is good, AWStats report an error
+# if all the first NbOfLinesForCorruptedLog lines have a format that does not.
+# match the LogFormat parameter.
+NbOfLinesForCorruptedLog=50
+
+# Language selection - 1st available accepted by browser.
+Lang="auto"
+
+# Monday is the 1st day of a week.
+FirstDayOfWeek=1
+
+# We don't use multilanguage report pages and flag links.
+ShowFlagLinks=""
+
+# Report page outline settings.
+Logo="awstats_logo6.png"
+LogoLink="http://www.awstats.org/"
+StyleSheet=""
+AddDataArrayMonthStats=1
+AddDataArrayShowDaysOfMonthStats=1
+AddDataArrayShowDaysOfWeekStats=1
+AddDataArrayShowHoursStats=1
+ShowLinksOnUrl=1
+MaxLengthOfShownURL=64
+
+# Report formats and subpages.
+ShowMenu=1
+ShowSummary=UVPHB
+ShowMonthStats=UVPHB
+ShowDaysOfMonthStats=VPHB
+ShowDaysOfWeekStats=PHB
+ShowHoursStats=PHB
+ShowDomainsStats=PHB
+ShowHostsStats=PHBL
+ShowAuthenticatedUsers=0
+ShowRobotsStats=HBL
+ShowWormsStats=0
+ShowEMailSenders=0
+ShowEMailReceivers=0
+ShowSessionsStats=1
+ShowPagesStats=PBEX
+ShowFileTypesStats=HB
+ShowFileSizesStats=0
+ShowDownloadsStats=HB
+ShowOSStats=1
+ShowBrowsersStats=1
+ShowScreenSizeStats=0
+ShowOriginStats=PH
+ShowKeyphrasesStats=1
+ShowKeywordsStats=1
+ShowMiscStats=a
+ShowHTTPErrorsStats=1
+ShowSMTPErrorsStats=0
+ShowClusterStats=0
+
+# Plugins - see /etc/awstats/awstats.conf for details.
+LoadPlugin="tooltips"
+LoadPlugin="decodeutfkeys"
+LoadPlugin="hostinfo"
+LoadPlugin="geoipfree"
+#LoadPlugin="geoip GEOIP_STANDARD /var/lib/geoipfree/GeoIP.dat"
+#LoadPlugin="userinfo"

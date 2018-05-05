@@ -1,0 +1,12 @@
+# Common literals for ModSecurity OWASP Core Rule Set updater.
+# A shell script fragment, handle with care!
+# Part of the website-manager-2 package.
+
+if [ -d "/etc/modsecurity" ]; then                      # Jessie+ modification
+    MODSEC_DIR="/etc/modsecurity/modsecurity-crs"	# ModSec CRS storage
+else							# Before Jessie
+    MODSEC_DIR="/etc/apache2/modsecurity/modsecurity-crs"
+fi
+MODSEC_TIMEOUT=1
+MODSEC_URL="https://github.com/SpiderLabs/owasp-modsecurity-crs/archive/v3.0/master.zip"
+MODSEC_USERAGENT="WSM2 ModSecurity CRS Updater"

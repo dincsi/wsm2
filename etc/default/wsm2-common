@@ -1,0 +1,349 @@
+# Common literals for Website-Manager-2. This is a shell script fragment, handle with care!
+# Part of the website-manager-2 package.
+
+###################################################
+# Perhaps isn't necessary to modify anything below.
+
+APACHEADMIN="webadmin"                                  # Linux user for web administration 
+APACHEADMINGROUP="www-data"                             # Linux group for web administration 
+APACHEAUTHDIR="/etc/apache2/auth.d"                     # Web user's authentication data folder
+APACHEBACKUPGROUP="disk"				# Linux group for backup purposes
+APACHEBINROOT="/usr/local/bin"                          # Root directory for binaries
+if [ -d "/etc/apache2/conf-available" ]; then		# Apache 2.4 modification (Jessie+)
+    APACHECONFIGDIR="/etc/apache2/conf-available"	# Directory for Apache configurations
+else							# Apache 2.2 settings
+    APACHECONFIGDIR="/etc/apache2/conf.d"               # Directory for Apache configurations
+fi
+APACHEDAEMON="/etc/init.d/apache2"                      # Start-stop script for apache
+APACHEDISCONF="/usr/sbin/a2disconf"                     # a2disconf command call
+APACHEDISMOD="/usr/sbin/a2dismod"                       # a2dismod command call
+APACHEDISSITE="/usr/sbin/a2dissite"                     # a2dissite command call
+APACHEDNLOADDIR="download"                              # Special directory for downloadables
+APACHEDOCROOT="/var/www"                                # Public web documentroot
+APACHEENCONF="/usr/sbin/a2enconf"                       # a2enconf command call
+APACHEENMOD="/usr/sbin/a2enmod"                         # a2enmod command call
+APACHEENSITE="/usr/sbin/a2ensite"                       # a2esite command call
+APACHEGROUP="www-data"                                  # Linux group for web content
+APACHELOCKDIR="/var/lock/apache2-mpm-itk"               # Directory for multiuser lockfiles
+APACHELOGDIR="/var/log/apache2"                         # Root directory for Apache logs
+APACHELOGS="access alert audit error forensic modsec rewrite urlcheck"
+APACHESSLIP="*"                                         # IP for virtualhosts administration
+APACHESSLPORT="443"                                     # SSL service port
+APACHEUPLOADDIR="upload"                                # Special directory for uploader
+APACHEUSER="www-data"                                   # Linux user for public webservice
+APACHEVHADMINGROUP="admin"                              # Virtualhost administrators
+APACHEVHBINDIR="bin"                                    # Special directory for symlinks to executables
+APACHEVHCONFDIR="config"                                # Special directory for apps config files
+APACHEVHLOGDIR="log"                                    # Special directory for apps logfile symlinks
+APACHEVHOSTSDIR="/etc/apache2/sites-available"          # Directory for available virtualhosts
+APACHEVHOSTSENDIR="/etc/apache2/sites-enabled"          # Directory for enabled virtualhosts
+APACHEVHSTATSGROUP="stats"                              # Virtualhost auditors
+APACHEWEBIP="*"                                         # IP for public web virtualhosts
+APACHEWEBPORT="80"                                      # HTTP service port
+AWK="/usr/bin/awk"                                      # awk command call
+AWSTATS_EXC="/etc/apache2/awstats.exception"            # Parsed exception file
+AWSTATS_HOSTS="/etc/apache2/awstats.hosts"              # Parsed hosts file
+AWSTATSBINDIR="/usr/local/bin"                          # Directory for AwStats binaries 
+AWSTATSCONFIGDIR="/etc/awstats"                         # Web statistics configurations directory
+AWSTATSCONTDIR="/var/lib/awstats"                       # Web statistics result container
+AWSTATSEXAMPLEDIR="/usr/share/doc/awstats/examples"     # AwStats example configs
+AWSTATSLINK="awstats"                                   # Link name points to web statistics
+AWSTATSPROGS="awstats_updateall.pl awstats_buildstaticpages.pl"
+AWSTATSTOOLSDIR="/usr/share/awstats/tools"     		# AwStats tools folder
+AWSTATSWEBROOT="$APACHEDOCROOT/awstats"                 # Web statistics html document root
+BASENAME="/usr/bin/basename"                            # basename command call
+CUT="/usr/bin/cut"					# cut command call
+DATE="/bin/date"                                        # date command call
+DEBIAN_MAIOR="$(cat /etc/debian_version | /usr/bin/cut -c1)"	# Debian major version number
+DEFAULT_AUDITOR="auditor"                               # Default auditor user (stats)
+DEFAULT_PAGE="index.html"                               # Default webpage
+if [ -e "$APACHEVHOSTSDIR/000-default.conf" ]; then	# Apache 2.4 modification (Jessie+)
+    DEFAULT_VHOST="000-default"                         # Default virtualhost configuration
+else							# Apache 2.2 settings
+    DEFAULT_VHOST="default"                             # Default virtualhost configuration
+fi
+DEFAULT_WEBMASTER="webmaster"                           # Default webmaster user (DAV)
+DIRNAME="/usr/bin/dirname"                              # dirname command call
+ENVSUBST="/usr/bin/envsubst"                            # envsubst command call
+EXIT_ERR="1"                                            # Exit code on error 
+EXIT_SUCC="0"                                           # Exit code on success 
+FIND="/usr/bin/find"                                    # find command call
+GEOIPDATABASE="/var/lib/geoipfree/ipscountry.dat"       # GeoIP database
+GEOIPLOOKUP="/usr/bin/geoiplookup"			# GeoIP lookup command call
+GEOIPSOURCE="/usr/share/perl5/Geo/ipscountry.dat"       # GeoIP maintainers DB
+GEOLITEDATABASE="/var/lib/geoipfree/GeoIP.dat"          # GeoIP Lite Country database
+GEOLITESOURCE="/usr/share/GeoIP/GeoIP.dat"              # GeoIP Lite Country maintainers DB
+GEOLOCATEURL="http://ip-api.com/csv/"			# Web API for geolocation
+GREP="/bin/grep"                                        # grep command call
+GZIP="/bin/gzip"                                        # gzip command call
+HTPASSWD="/usr/bin/htpasswd"                            # htpasswd command call
+MAKEPASSWD="/usr/bin/pwgen -n -c 12 1"                  # This command makes a random password
+MASKCERT="\([0-9a-zA-Z._-]\)\+"                         # SED regexp: valid certificate name
+MASKGROUP="\([0-9a-zA-Z._-]\)\+"                        # SED regexp: valid groupname
+MASKUSER="\([0-9a-zA-Z._-]\)\+"                         # SED regexp: valid username
+MASKWEB="\(\([0-9a-zA-Z_-]\)\+\.\)\+\([0-9a-zA-Z]\)\+"  # SED regexp: valid website name
+MASKEMAIL="$MASKUSER@$MASKWEB"                          # SED regexp: valid e-mail address
+MASKPASS="\([[:graph:]]\)\+"                            # SED regexp: valid password
+OPENSSL="/usr/bin/openssl"				# openssl command call
+PHPCONFDIR="/etc/php5/apache2/conf.d"			# PHP config overrides folder
+PHPCONFFILE="wsm2-php5.ini"				# PHP config file
+PHPLOGDIR="/var/log/php5"                               # Root directory for PHP5 logs
+PHPLOGS="php5"                                      	# Common PHP logfile
+ROBOTS_PAGE="robots.txt"                                # Crawler and spider control file
+SED="/bin/sed"                                          # sed command call
+SETFACL="/usr/bin/setfacl"                              # setfacl command call
+SSLCADAYS=3650						# SSL CA validity time
+SSLCERTDAYS=365						# SSL certs validity time
+SSLCRLDAYS=30						# SSL certs revocation list update freq
+SSLCONF="/etc/ssl/openssl.cnf"				# SSL default configuration
+SSLCONFDIR="/etc/ssl"                                   # SSL certs configuration folder
+SSLCERTDIR="$SSLCONFDIR/certs"				# SSL certs store
+SSLKEYSDIR="$SSLCONFDIR/private"			# SSL private keys store
+TAIL="/usr/bin/tail"					# tail command call
+TAR="/bin/tar"                                          # tar command call
+TOUCH="/bin/touch"                                      # touch command call
+URLCHECK="/usr/local/bin/urlcheck"                      # urlcheck pathname
+URLCHECK_EXC="/etc/apache2/urlcheck.exception"          # urlcheck exceptions file pathname
+URLCHECK_HOSTS="/etc/apache2/urlcheck.hosts"            # urlcheck hosts file pathname
+UNDERCONSTRUCTION="Sorry, not (yet) implemented."       # Under construction message
+VERSION="2.6.6"                                        	# Version number
+WEBCRONTAB=".htcrontab"                                 # Per-vhost crontab file name
+WGET="/usr/bin/wget"                                    # wget command call
+WHOAMI="/usr/bin/whoami"                                # whoami command call
+WSMBOTSFILE="robots.txt"                                # Template for robots.txt
+WSMCONFIGFILE="wsm2-defaults"                           # wsm2 Apache global configuration
+WSMCONFIGLOCAL="wsm2-local"                             # wsm2 Apache local configuration
+WSMHTMLPAGE="index.html"                                # Template for default HTML page
+WSMHTTPTEMPLATE="http.conf"				# Template for apache virtualhost
+WSMLOGFILE="/var/log/wsm2.log"                          # Logfile for wsm2 itself
+WSMLOGTAIL="wsm2-logtail.php"				# Ajax-based logtail utility
+if [ -d "/etc/modsecurity" ]; then			# Jessie+ modification
+    WSMMODSECCONFDIR="/etc/modsecurity"			# wsm2 ModSec rulesets and confs
+else							# Before Jessie
+    WSMMODSECCONFDIR="/etc/apache2/modsecurity"		# wsm2 ModSec rulesets and confs
+fi
+if [ -d "/var/lib/mod_security" ]; then			# wsm2 before v2.6 compatibility
+    WSMMODSECDIR="/var/lib/mod_security"                # wsm2 ModSecurity workplace
+else							# wsm2 2.6+
+    WSMMODSECDIR="/var/lib/modsecurity"			# wsm2 ModSecurity workplace
+fi							# ModSec ruleset configurations
+WSMMODSECCONFS="currentversion rules modsecurity_crs_99_errata.wsm2"
+WSMMODSECCRSDIR="modsecurity-crs"			# wsm2 ModSec core rulesets folder
+WSMMODSECDIRS="AuditLogDir SecDataDir SecTmpDir SecUploadDir"	# wsm2 ModSec workplace subfolders
+WSMMODSECLOCAL="wsm2-modsec"                            # wsm2 ModSecurity local configuration
+WSMREQCATEMPLATE="CAcert.req"				# Template for CA certificate requests
+WSMREQCLITEMPLATE="cert_client.req"			# Template for client certificate requests
+WSMREQSRVTEMPLATE="cert_server.req"			# Template for server certificate requests
+WSMSGNCATEMPLATE="CA.cnf"				# Template for local web CA
+WSMSGNCLICONF="cert_client.cnf"				# To sign a client certificate
+WSMSGNSELFCONF="cert_self.cnf"				# To selfsign a local web certificate
+WSMSGNSRVCONF="cert_server.cnf"				# To sign a local web certificate
+WSMTEMPLATEDIR="/usr/local/share/website-manager-2/templates"   # Template directory
+
+# Messages
+MSG_WSM_ALL_NOGROUP="No valid group name given!"
+MSG_WSM_ALL_NOUSER="No valid user name given!"
+MSG_WSM_ALL_NOWEBSITE="No valid website given!"
+MSG_WSM_ALL_ROOTNEED="Must be run as root."
+
+MSG_WSM_ADDGROUP_ADDED="Added new group:"
+MSG_WSM_ADDGROUP_EXISTS="Already existing group:"
+
+MSG_WSM_ADDUSER_ADDED="Added or changed user:"
+MSG_WSM_ADDUSER_WRONGPWD="Wrong password given!"
+
+MSG_WSM_ADDUSERTOGROUP_ADDED="Succesfully added user to group:"
+MSG_WSM_ADDUSERTOGROUP_EXISTS="User already added to group:"
+
+MSG_WSM_CA_CERTFAILED="Failed to generate CA certificate"
+MSG_WSM_CA_CERTOK="Generated CA certificate"
+MSG_WSM_CA_CONFOK="Generated configuration file"
+MSG_WSM_CA_KEYFAILED="Failed to generate RSA private key"
+MSG_WSM_CA_KEYOK="Generated RSA private key"
+MSG_WSM_CA_REVFAILED="Failed to generate revocation list"
+MSG_WSM_CA_REVOK="Generated revocation list"
+MSG_WSM_CA_WRONGEMAIL="Wrong email address given!"
+MSG_WSM_CA_WRONGWEB="Wrong website name given!"
+
+MSG_WSM_CERT_CAGLOBAL="Using global CA:"
+MSG_WSM_CERT_CALOCAL="Using local CA:"
+MSG_WSM_CERT_CASELF="Self-signed certificate will be created"
+MSG_WSM_CERT_CERTEXISTING="An existing web certificate will be used:"
+MSG_WSM_CERT_CERTFAILED="Failed to generate certificate"
+MSG_WSM_CERT_CERTOK="Generated certificate"
+MSG_WSM_CERT_CONFOK="Generated REQ configuration"
+MSG_WSM_CERT_KEYFAILED="Failed to generate RSA private key"
+MSG_WSM_CERT_KEYOK="Generated RSA private key"
+MSG_WSM_CERT_ORPHANCERT="Orphan certificate deleted:"
+MSG_WSM_CERT_REQFAILED="Failed to generate certificate request"
+MSG_WSM_CERT_WRONGCERT="Wrong CA certificate name given!"
+MSG_WSM_CERT_WRONGEMAIL="Wrong email address given!"
+MSG_WSM_CERT_WRONGWEB="Wrong website name given!"
+
+MSG_WSM_CLI_CERTFAILED="Failed to generate certificate"
+MSG_WSM_CLI_CERTOK="Generated certificate"
+MSG_WSM_CLI_CONFOK="Generated REQ configuration"
+MSG_WSM_CLI_KEYFAILED="Failed to generate RSA private key"
+MSG_WSM_CLI_KEYOK="Generated RSA private key"
+MSG_WSM_CLI_ORPHANCERT="Orphan certificate deleted:"
+MSG_WSM_CLI_REQFAILED="Failed to generate certificate request"
+MSG_WSM_CLI_WRONGCERT="Wrong CA certificate name given!"
+MSG_WSM_CLI_WRONGEMAIL="Wrong email address given!"
+MSG_WSM_CLI_WRONGWEB="Wrong website name given!"
+
+MSG_WSM_CONF_AWSTATS="Configuring AwStats..."
+MSG_WSM_CONF_CREATED="created"
+MSG_WSM_CONF_DEBIAN="Debian version:"
+MSG_WSM_CONF_DEFAULT_CERT="Symlinking default SSL certificate..."
+MSG_WSM_CONF_DEFAULT_CERT_EXISTS="Default SSL certificate already symlinked."
+MSG_WSM_CONF_DEFAULT_VHOST="Setting up default virtualhost..."
+MSG_WSM_CONF_DEFAULT_VHOST_EXISTS="Default virtualhost already set."
+MSG_WSM_CONF_GLOBAL="Modifying global configuration..."
+MSG_WSM_CONF_LOGFILE_CREATED="Created logfile"
+MSG_WSM_CONF_MODSEC="Configuring ModSecurity extension..."
+MSG_WSM_CONF_MODULES="Modifying modules configuration..."
+MSG_WSM_CONF_PHP5="Configuring PHP..."
+
+MSG_WSM_CREATEWEB_CREATED="created"
+MSG_WSM_CREATEWEB_DOCROOTEXIST="Sorry, document root already exists - you may cleanup."
+MSG_WSM_CREATEWEB_EXISTS="exists - nothing to do"
+MSG_WSM_CREATEWEB_HTTPCONFEXIST="Sorry, apache virtualhost configuration already exists - you may cleanup."
+MSG_WSM_CREATEWEB_HTTPGROUPEXIST="Sorry, group data file for this virtualhost already exists - you may cleanup."
+MSG_WSM_CREATEWEB_HTTPSCONFEXIST="Sorry, apache-ssl virtualhost configuration already exists - you may cleanup."
+MSG_WSM_CREATEWEB_HTTPUSEREXIST="Sorry, web users data file for this virtualhost already exists - you may cleanup."
+MSG_WSM_CREATEWEB_NOTEMPLATE="Missing template file:"
+MSG_WSM_CREATEWEB_NOWEBSITE="No valid website name given!"
+MSG_WSM_CREATEWEB_WRONGAUPWD="Wrong auditor's password given!"
+MSG_WSM_CREATEWEB_WRONGAUUSER="Wrong auditor's username given!"
+MSG_WSM_CREATEWEB_WRONGCERT="Wrong certificate name given!"
+MSG_WSM_CREATEWEB_WRONGEMAIL="Wrong email address given!"
+MSG_WSM_CREATEWEB_WRONGWEB="Wrong website name given!"
+MSG_WSM_CREATEWEB_WRONGWMPWD="Wrong webmaster's password given!"
+MSG_WSM_CREATEWEB_WRONGWMUSER="Wrong webmaster's username given!"
+
+MSG_WSM_DELGROUP_DELETED="Succesfully deleted group:"
+
+MSG_WSM_DELUSER_DELETED="Succesfully deleted user:"
+
+MSG_WSM_DELUSERFROMGROUP_DELETED="Removed user's membership (if any) from group:"
+
+MSG_WSM_REV_CAGLOBAL="Using global CA:"
+MSG_WSM_REV_CALOCAL="Using local CA:"
+MSG_WSM_REV_NOCA="Invalid CA (no key/cert/conf or unable to sign):"
+MSG_WSM_REV_NOCERT="Missing certificate:"
+MSG_WSM_REV_REVFAILED="Failed to revoke:"
+MSG_WSM_REV_REVOK="Revoked certificate:"
+MSG_WSM_REV_REVLISTFAILED="Failed to generate revocation list"
+MSG_WSM_REV_REVLISTOK="Generated revocation list"
+MSG_WSM_REV_WRONGCACERT="Wrong CA certificate name given!"
+MSG_WSM_REV_WRONGCERT="Wrong certificate name given!"
+MSG_WSM_REV_WRONGWEB="Wrong website name given!"
+
+MSG_WSM_RMVWEB_CONFIRM="Ready to remove - are you sure (y/n)?"
+MSG_WSM_RMVWEB_NOAPACHE="Missing Apache file:"
+MSG_WSM_RMVWEB_NOAPACHEDIR="Missing Apache folder:"
+MSG_WSM_RMVWEB_NOAPACHELOG="Missing Apache logfiles:"
+MSG_WSM_RMVWEB_NOAWSTATS="Missing AwStats file:"
+MSG_WSM_RMVWEB_NOBINROOT="Missing website binaries:"
+MSG_WSM_RMVWEB_NODOCROOT="Missing website documents:"
+MSG_WSM_RMVWEB_NOPHPLOG="Missing PHP logfiles:"
+MSG_WSM_RMVWEB_NOTREMOVED="Unable to remove:"
+MSG_WSM_RMVWEB_REMOVED="Removed:"
+
+MSG_WSM_SAVEWEB_NOAPACHE="Missing Apache file:"
+MSG_WSM_SAVEWEB_NOAPACHELOG="Missing Apache logfiles:"
+MSG_WSM_SAVEWEB_NOAWSTATS="Missing AwStats file:"
+MSG_WSM_SAVEWEB_NOBINROOT="Missing website binaries:"
+MSG_WSM_SAVEWEB_NODOCROOT="Missing website documents:"
+MSG_WSM_SAVEWEB_NOPHPLOG="Missing PHP logfiles:"
+
+MSG_WSM_SIGN_CAGLOBAL="Using global CA:"
+MSG_WSM_SIGN_CALOCAL="Using local CA:"
+MSG_WSM_SIGN_CERTFAILED="Failed to generate certificate"
+MSG_WSM_SIGN_CERTOK="Generated certificate"
+MSG_WSM_SIGN_NOCA="Invalid CA (no key/cert/conf or unable to sign):"
+MSG_WSM_SIGN_NOCSR="Invalid or missing request:"
+MSG_WSM_SIGN_NOFQHN="Missing website name!"
+MSG_WSM_SIGN_WRONGCERT="Wrong CA certificate name given!"
+MSG_WSM_SIGN_WRONGFQHN="Wrong website name given!"
+
+# Usage message
+USAGE=`cat <<EOF
+website-manager-2 (Apache-2) toolkit version $VERSION
+Usage: $0 option parameters
+
+Website management:
+$0 -cw website [email [cert [webmaster [pw [auditor [pw]]]]]
+    Create a static website with certs and web statistics, manageable by DAV.
+    Email is an administrative email address maybe shown on error situations.
+    Cert may an existing SSL web certificate to use for website, or a CA
+    certificate to sign a newly created web certificate, placed into
+    $SSLCONFDIR structure. Use a filename here w/o pathname and extension.
+    Lack of them a simple, self-signed web certificate will be created.
+    Webmaster is a web user's name (defaults to "webmaster"), capable to DAV
+    and to show the /log web folder, authenticated with password given (random
+    generated and shown if you omit).
+    Auditor is a web user's name (defaults to "auditor"), capable to show the
+    /awstats folder (web statistics), authenticated with password given (random
+    generated and shown if you omit).
+$0 -cwca website [email [cert [webmaster [pw [auditor [pw]]]]]
+    As -cw, but by default (if the certificate parameter is empty), creates a
+    new local, dedicated Certificate Authority for this website, usable to sign
+    the webserver certificate, and optionally client certificates for client
+    authentication.
+$0 -rw | --removeweb website [force]
+    Completely remove a website: webpages, binaries, users, logs, configuration,
+    certificates, statistics - handle with care!
+$0 -sw website [--noapache] [--noawstats] [--nobins] [--nodocs] [--nologs]
+    Save a website into gzipped tarballs: webpages, binaries, users, logs,
+    configuration, certificates, statistics. You may exclude some parts, giving
+    the corresponding "no" options.
+
+User management (see $APACHEAUTHDIR folder):
+$0 -au | --adduser website username [password]
+    Add a web user (suitable for basic authentication) for website or change an
+    existing user's password. If you omit the password, a random will be
+    generated, displayed and logged.
+$0 -du | --deluser website username
+    Delete a web user and all group memberships.
+$0 -ag | --addgroup website groupname
+    Add a group of web users (suitable for basic authentication) for website.
+$0 -dg | --delgroup website groupname
+    Delete a web user group from website's existing groups.
+$0 -lug | --listusersgroup website username
+    List a web user's group memberships.
+$0 -aug | --addusertogroup website username groupname
+    Add a web user to a web user group.
+$0 -dug | --deuserfromgroup website username group
+    Delete a web user from a web user group.
+
+Certificate management (see $APACHEAUTHDIR folder):
+$0 -ca | --certificateauthority website [email]
+    Initialize a minimal, local web certificate authority (CA) named website.CA
+$0 -cert | --certificate website [email [CA]]
+    Generate or refresh an SSL certificate for the website, signed by the CA.
+    Email address will be included in certificate as a responsible contact.
+    CA is a CA certificate filename w/o path and extension, maybe a local
+    (website.CA) or global (from $SSLCONFDIR). If isn't given, a self-signed
+    server certificate will be created.
+$0 -client | --clientcertificate website email [CA]
+    Generate or refresh an SSL client certificate package according to the
+    website, signed by the CA given, with client's email in subject (CN).
+    CA is a CA certificate filename w/o path and extension, maybe a local
+    (website.CA) or global (from $SSLCONFDIR). If isn't given, defaults to
+    the website.CA.
+$0 -revoke | --revokecertificate website certificate [CA]
+    Revoke an SSL (server or client) certificate according to the website,
+    using local or global CA given. The certificate is a filename w/o path
+    and extension, placed into $APACHEAUTHDIR/[website] folder.
+    Command will regenerate the certificate revoke list (CRL) also.
+    If you omit the certificate, only the CRL will be refreshed.
+$0 -sign | --signcertificate [-s | -c] website csr_pathname [CA]
+    Signs a certificate request according to the website with CA certificate
+    given. The s/r switch indicates a server or a client certificate request.
+    The csr_pathname must be a full pathname with file extension also.
+    CA is a CA certificate filename w/o path and extension, maybe a local
+    (website.CA) or global (from $SSLCONFDIR). If isn't given, defaults to
+    the website.CA.
+
+EOF`

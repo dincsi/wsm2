@@ -1,0 +1,47 @@
+; PHP/Apache2 (Squeeze) default overrides for wsm2 policy.
+; Part of website-manager-2 package.
+
+[PHP]
+; Disabled and hidden by default (maybe enabled per-virtualhost).
+engine = Off
+expose_php = Off
+
+; Safe mode enabled with GID check only.
+safe_mode = On
+safe_mode_gid = On
+
+; Enabled open_basedir restrictions.
+open_basedir = /var/www/:/usr/lib/php5/
+
+; Restricted functions and classes (maybe modified globally, here).
+disable_functions = phpinfo, chmod, chown, closelog, curl_exec, disk_free_space, disk_total_space, diskfreespace, dl, escapeshellarg, escapeshellcmd, exec, fileinode, highlight_file, ini_set, max_execution_time, openlog, passthru, pclose, popen, proc_close, proc_get_status, proc_nice, proc_open, proc_terminate, set_time_limit, shell_exec, show_source, syslog, system
+disable_classes =
+
+; Reduced memory limit.
+memory_limit = 32M
+
+; Error handling and logging.
+; E_ALL & ~E_NOTICE would be set this way (this automatically excludes E_DEPRECATED AND E_USER_DEPRECATED)
+error_reporting = 6135
+error_log = /var/log/php5/php.log
+
+; Default character set.
+default_charset = "utf-8"
+
+; Restricted activities (maybe enabled per-virtualhost).
+allow_url_fopen = Off
+allow_url_include = Off
+file_uploads = Off
+
+[MySQL]
+; Allow or prevent persistent links.
+; http://php.net/mysql.allow-persistent
+mysql.allow_persistent = Off
+
+[MySQLi]
+; Allow or prevent persistent links.
+; http://php.net/mysqli.allow-persistent
+mysqli.allow_persistent = On
+
+[Session]
+session.cookie_secure = 0

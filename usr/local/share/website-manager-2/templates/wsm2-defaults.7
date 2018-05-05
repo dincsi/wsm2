@@ -1,0 +1,143 @@
+# Global Apeche-2 settings - part of website-manager-2 package.
+# /etc/apache2/conf.d/wsm2-defaults
+# /etc/apache2/conf-available/wsm2-defaults
+
+# Server HTTP response header.
+# Set to one of:  Full | OS | Minimal | Minor | Major | Prod
+ServerTokens Prod
+
+# Server signature on generated pages.
+# Set to one of:  On | Off | EMail
+ServerSignature Off
+
+# Disable TRACE method.
+# Set to one of:  On | Off | extended
+TraceEnable Off
+
+# Default Linux user and group.
+<IfModule mpm_itk_module>
+    AssignUserId www-data www-data
+</IfModule>
+
+# Lockfiles (writable for anyone within www-data group).
+AcceptMutex default
+LockFile /var/lock/apache2-mpm-itk/accept.lock
+<IfModule mod_rewrite.c>
+    RewriteLock /var/lock/apache2-mpm-itk/rewrite.lck
+</IfModule>
+<IfModule mod_dav_fs.c>
+    DavLockDB /var/lock/apache2-mpm-itk/DavLock
+</IfModule>
+
+# Logfiles.
+CustomLog /var/log/apache2/access.log vhost_combined
+ErrorLog /var/log/apache2/error.log
+
+# Restricted access by default.
+<Directory />
+    AllowOverride None
+    Order Deny,Allow
+    Deny from all
+</Directory>
+
+<Directory /var/www>
+    Options none
+    AllowOverride none
+    Order deny,allow
+    Deny from all
+    # DirectoryIndex restrictions - dir.conf must be redefined at
+    # directory level (maybe a bug?).
+    <IfModule mod_dir.c>
+      <IfModule mod_php5.c>
+        # Disable CGI, Perl.
+        DirectoryIndex index.html index.php index.xhtml index.htm
+      </IfModule>
+      <IfModule !mod_php5.c>
+        # Disable index.php also (prevents forbidden autoindex page).
+        DirectoryIndex index.html index.xhtml index.htm
+      </IfModule>
+    </IfModule>
+</Directory>
+
+# Disallow user directories.
+<IfModule mod_userdir.c>
+    UserDir disabled
+</IfModule>
+
+# Server status enabled for Munin.
+ExtendedStatus On
+<Location /server-status>
+    SetHandler server-status
+    Order deny,allow
+    Deny from all
+    Allow from localhost
+    <IfModule security2_module>
+        SecRuleEngine Off
+    </IfModule>
+</Location>
+
+# A weak trial to disable Perl.
+<Location /perl>
+    Options -ExecCGI
+</Location>
+
+# PHP default settings.
+<IfModule mod_php5.c>
+  AddType application/x-httpd-php .php .phtml .php3 .php4 .php5
+  AddType application/x-httpd-php-source .phps
+</IfModule>
+# Prevents downloading PHP scripts when engine isn't loaded.
+<IfModule !mod_php5.c>
+  <Files ~ '\.php$'>
+    Order allow,deny
+    Deny from all
+    Allow from none
+  </Files>
+  <Files ~ '\.php.'>
+    Order deny,allow
+    Allow from all
+  </Files>
+</IfModule>
+# Disallow PHP by default.
+<IfModule mod_php4.c>
+    php_admin_flag engine off
+</IfModule>
+<IfModule mod_php5.c>
+    php_admin_flag engine off
+</IfModule>
+
+# Disallow proxying by default.
+<IfModule mod_proxy.c>
+    ProxyRequests Off
+    <Proxy *>
+        Order deny,allow
+        Deny from all
+    </Proxy>
+</IfModule>
+
+# Expiry defaults.
+<IfModule mod_expires.c>
+    ExpiresActive on
+    ExpiresDefault "access plus 1 hours"
+</IfModule>
+
+# GeoIP defaults (overrides maintainer's configuration).
+<IfModule mod_geoip.c>
+    GeoIPEnable Off
+    GeoIPDBFile /var/lib/geoipfree/GeoIP.dat
+</IfModule>
+
+# OK, this isn't declared as supported, but necessary.
+<IfModule mod_ssl.c>
+    NameVirtualHost *:443
+</IfModule>
+
+# SSL security enhancements.
+<IfModule mod_ssl.c>
+    # Disable SSLv3 avoiding POODLE attack
+    # https://security-tracker.debian.org/tracker/CVE-2014-3566
+    SSLProtocol all -SSLv2 -SSLv3
+    # Enable only secure ciphers
+    # https://community.qualys.com/blogs/securitylabs/2013/03/19/rc4-in-tls-is-broken-now-what
+    SSLCipherSuite HIGH:MEDIUM:!aNULL:!MD5:!RC4
+</IfModule>

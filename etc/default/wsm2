@@ -1,0 +1,22 @@
+# Common literals for website-manager-2.
+# This is a shell script fragment, handle with care!
+# Part of the website-manager-2 package.
+
+# Default hostname used on creation of default virtualhost (wsm2 --configure).
+# If empty, machine's fully qualified hostname will be used.
+DEFAULT_HOSTNAME=""
+DEFAULT_HOSTNAME="${DEFAULT_HOSTNAME:-$(/bin/hostname --fqdn)}"
+
+# Default email address used on virtualhost creation (wsm2 -cw).
+# You may change to your real administrative email address.
+# If empty, root@DEFAULT_HOSTNAME will be used.
+DEFAULT_EMAIL=""
+DEFAULT_EMAIL="${DEFAULT_EMAIL:-root@$DEFAULT_HOSTNAME}"
+
+# Global web certificate or certificate authority to use for websites.
+# Specify only the filename of this web- or CA certificate below,
+# without path and without file extension (e.g. to use the  Debian's default
+# web certificate for every virtualhosts, write "ssl-cert-snakeoil").
+# If empty, separated, self-signed web certificates will be generated
+# for every virtualhost.
+DEFAULT_CERT=""
