@@ -1,6 +1,6 @@
 #!/bin/bash
 # Small script to build .tgz distributable.
-# Part of vebsite-manager-2 package.
+# Part of website-manager-2 package.
 
 DATE=`date '+%Y%m%d%H%M%S'`
 tar czvf `basename $0`-$DATE.tgz \

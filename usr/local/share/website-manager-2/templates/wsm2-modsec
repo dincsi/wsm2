@@ -107,6 +107,8 @@
     # Including the core rule set (the new way).
     # You may define or include your own general rules there.
     IncludeOptional $WSMMODSECCONFDIR/rules/*.conf
+    
+#TODO: A Stretchben nincs alapból activated_rules könyvtár 
     IncludeOptional $WSMMODSECCONFDIR/rules/activated_rules/*.conf
     # Optional system-wide errata rules (must be the last ruleset).
     IncludeOptional $WSMMODSECCONFDIR/modsecurity_crs_??_errata.wsm2

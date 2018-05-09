@@ -1,4 +1,4 @@
-# Apache configuration for public website running on Debian Wheezy with Apache 2.2.
+# Apache configuration for public website running on Debian Jessie with Apache 2.4.
 # Created at $TIMESTAMP by website-manager-2 toolkit version $VERSION.
 
 <VirtualHost $APACHEWEBIP:$APACHEWEBPORT >
@@ -8,10 +8,12 @@
 #   ServerAlias         $vhost.$DEFAULT_HOSTNAME
 
     # Environment variables used.
-    # mark forwarded (proxy) requests:
-    SetEnvIf X-Forwarded-For "^.*\..*\..*\..*" forwarded
-    # optionally mark IPs to watch:
-#   SetEnvIf            Remote_Addr "1\.2\.4\.4" alert
+    <IfModule setenvif_module>
+	# mark forwarded (proxy) requests:
+	SetEnvIf X-Forwarded-For "^.*\..*\..*\..*" forwarded
+	# optionally mark IPs to watch:
+#   	SetEnvIf            Remote_Addr "1\.2\.4\.4" alert
+    </IfModule>
 
     # Common log settings.
     ErrorLog            $APACHELOGDIR/$vhost-error.log
@@ -24,7 +26,7 @@
     </IfModule>
     # Optional alert logging:
 #   CustomLog           $APACHELOGDIR/$vhost-alert.log combined env=alert
-    # Optional common alert log to be watched via logcheck:
+    # Optional common alert log to be watched via logcheck.
 #   CustomLog           $APACHELOGDIR/ALLHOSTS-alert.log combined env=alert
     # Optional forensic logging:
     <IfModule log_forensic_module>
@@ -34,12 +36,12 @@
     # Fix buggy clients' communications.
     <IfModule setenvif_module>
         ## Internet Explorer up to 6.x
-        SetEnvIf User-Agent ".*MSIE [2-6].*" \
+        SetEnvIfNoCase User-Agent ".*MSIE [2-6].*" \
             downgrade-1.0 force-response-1.0 \
             nokeepalive
         ## Internet Explorer over 6.x (Ajax KeepAliveTimeout problem)
-        ## http://stackoverflow.com/questions/23145688/ie10-11-ajax-xhr-error-script7002-xmlhttprequest-network-error-0x2ef3
-#       SetEnvIf User-Agent ".*MSIE [17-9].*" \
+	## http://stackoverflow.com/questions/23145688/ie10-11-ajax-xhr-error-script7002-xmlhttprequest-network-error-0x2ef3
+#       SetEnvIfNoCase User-Agent ".*MSIE [17-9].*" \
 #           nokeepalive
 #       SetEnvIfNoCase User-Agent "^Mozilla\/5\.0 \(Windows NT.*rv:11" \
 #           nokeepalive
@@ -61,15 +63,15 @@
         php_admin_flag engine off
         php_admin_value open_basedir $APACHEDOCROOT/$vhost/
 #       php_admin_value include_path .:/usr/share/php5/
-        php_admin_value safe_mode_exec_dir $APACHEVHBINDIR/
 #       php_admin_value memory_limit 32M
-        ## Keep below ProxyTimeout in HTTPs configuration!
+	## Keep below ProxyTimeout in HTTPs configuration!
 #       php_admin_value max_execution_time 30
         php_admin_flag magic_quotes_gpc off
         php_admin_flag magic_quotes_runtime off
         php_admin_flag magic_quotes_sybase off
 #       php_admin_flag file_uploads on
 #       php_admin_flag apc.rfc1867 on
+	## Keep below SSLRenegBufferSize in HTTPs configuration when using client certificates!
 #       php_admin_value upload_max_filesize 10M
 #       php_admin_value post_max_size 10M
 #       php_admin_value upload_tmp_dir $APACHEDOCROOT/$vhost/$APACHEUPLOADDIR/
@@ -83,8 +85,7 @@
     # Lack of the module hiding sources.
     <IfModule !mod_php5.c>
         <FilesMatch "\.php$">
-            Order deny,allow
-            Deny from all
+            Require all denied
         </FilesMatch>
     </IfModule>
 
@@ -111,14 +112,18 @@
     # General purpose rewrites.
     <IfModule mod_rewrite.c>
         RewriteEngine On
-#       RewriteLog $APACHELOGDIR/$vhost-rewrite.log
-#       RewriteLogLevel 3
+	# Use only on debug!
+#	LogLevel mod_rewrite.c:trace3
 	#
         # Disabling TRACE and TRACK methods.
+	# http://httpd.apache.org/docs/2.4/mod/core.html#traceenable
+	# "Despite claims to the contrary, TRACE is not a security vulnerability
+	# and there is no viable reason for it to be disabled."
+	# Who knows?
         RewriteCond %{REQUEST_METHOD} ^(TRACE|TRACK)$
         RewriteRule .* - [F]
-	#
-        # Statistics pages.
+        #
+	# Statistics pages.
         RewriteRule ^/forgalom(/.*)*$	https://%{HTTP_HOST}/forgalom$1 [L,R,QSA]
         RewriteRule ^/awstats(/.*)*$	https://%{HTTP_HOST}/awstats$1 [L,R,QSA]
 	#
@@ -131,11 +136,11 @@
 #       RewriteCond %{REMOTE_ADDR} !^(127\.0\.1\.1)$
 	# Optionally by server IP also:
 #	RewriteCond %{REMOTE_ADDR} !^(IP\.USED\.BY\.HTTPS-PROXY)$
-        # Optional exception: the common client certificate may be delivered via http.
+	# Optional exception: the common client certificate may be delivered via http.
 #	RewriteCond %{REQUEST_URI} !^/client.p12$
-        # Protecting only a part:
+	# Protecting only a part:
 #       RewriteRule ^/admin(/.*)*$ https://%{HTTP_HOST}/admin$1 [L,R,QSA]
-        # Protecting whole site:
+	# Protecting whole site:
 #       RewriteRule ^/(.*)         https://%{HTTP_HOST}/$1 [L,R,QSA]
 	#
         # GeoIP based rewrites.
@@ -165,32 +170,63 @@
     <IfModule mod_rewrite.c>
 #       RewriteEngine On
         # Use only on debug!
-#       RewriteLogLevel 3
+#       LogLevel mod_rewrite.c:trace3
 
     </IfModule>
 
     # Application-specific aliases.
     <IfModule alias_module>
-        # Uncomment the line below to revert the /icons/ alias was set
-        # by default in alias module configuration.
+        # Uncomment the line below to revert the /icons/ alias was set by default
+        # in alias module configuration. Note, this will break fancy indexing!
 #       Alias /icons/ "$APACHEDOCROOT/$vhost/icons/"
 
     </IfModule>
 
+    # SEO-canonicalisation via HTTP header. Use only if your CMS doesn't does it!
+    # You may activate this feature below.
+    <If "false">
+        <IfModule headers_module>
+            <IfModule env_module>
+                <IfModule setenvif_module>
+                    # Canonical protocol and hostname below - feel free to modify!
+                    SetEnvIfExpr "true" seo_proto=http
+                    SetEnvIfExpr "true" seo_host=$vhost
+                    #
+                    # Importing URI - you may not change this.
+                    <IfModule mod_rewrite.c>
+                        RewriteEngine On
+                        RewriteCond %{QUERY_STRING} ^$
+                        RewriteRule ^(.*)$ - [E=seo_uri:%{REQUEST_URI}]
+                        RewriteCond %{QUERY_STRING} !^$
+                        RewriteRule ^(.*)$ - [E=seo_uri:%{REQUEST_URI}?%{QUERY_STRING}]
+                    </IfModule>
+                    # Checking hostname then composing the canonical header if necessary.
+		    # TODO: protocol mismatch handling (not so trivial because of https->http proxy!).
+                    Header set Link "<%{seo_proto}e://%{seo_host}e%{seo_uri}e>; rel=\"canonical\"" \
+                                    "expr= %{reqenv:seo_proto} =~ /^https?$/ && \
+                                           -n %{reqenv:seo_host} && %{HTTP_HOST} != %{reqenv:seo_host}"
+                </IfModule>
+            </IfModule>
+        </IfModule>
+    </If>
+
     # Virtualhost's root folder.
     <Directory $APACHEDOCROOT/$vhost>
-        Allow from all
-        AllowOverride Authconfig Limit FileInfo
+        Require all granted
+        AllowOverride Authconfig Limit FileInfo Nonfatal=Override
+        ## Take care, may break .htaccess evaluation!
+        ## AllowOverrideList None
         Options +FollowSymLinks
 #       Options +SymLinksIfOwnerMatch
     </Directory>
 
     # Symlinked binaries to call from PHP (if any).
     <Directory $APACHEDOCROOT/$vhost/$APACHEVHBINDIR>
-        Deny from all
-        AllowOverride none
-        Options -FollowSymLinks
-        Options -SymLinksIfOwnerMatch
+        Require all denied
+        AllowOverride None
+        ## Bugous, take care!
+        ## AllowOverrideList None
+        Options None
 	# PHP disabled here.
         <IfModule mod_php5.c>
             php_admin_flag engine off
@@ -203,10 +239,11 @@
 
     # Invisible configurations (containing SQL password, etc).
     <Directory $APACHEDOCROOT/$vhost/$APACHEVHCONFDIR>
-        Deny from all
-        AllowOverride none
-        Options -FollowSymLinks
-        Options -SymLinksIfOwnerMatch
+        Require all denied
+        AllowOverride None
+        ## Bugous, take care!
+        ## AllowOverrideList None
+        Options None
 	# PHP disabled here.
         <IfModule mod_php5.c>
             php_admin_flag engine off
@@ -219,10 +256,14 @@
 
     # Official download directory.
     <Directory $APACHEDOCROOT/$vhost/$APACHEDNLOADDIR>
-        Allow from all
-        Options +Indexes +SymlinksIfOwnerMatch
+        Require all granted
+        Options +Indexes +FollowSymlinks
+#	Options +SymlinksIfOwnerMatch
+	IndexOptions FancyIndexing FoldersFirst IgnoreCase XHTML
         # Warning: liberal overrides!
-        AllowOverride FileInfo Indexes Limit Options
+	AllowOverride Indexes Options Nonfatal=Override
+        ## Bugous, take care!
+        ## AllowOverrideList None
         # Force to download almost any file types.
         <IfModule mod_rewrite.c>
             RewriteEngine On
@@ -242,8 +283,10 @@
 
     # Official upload directory (writable by $APACHEUSER).
     <Directory $APACHEDOCROOT/$vhost/$APACHEUPLOADDIR>
-        Deny from all
+	Require all denied
         AllowOverride none
+        ## Bugous, take care!
+        ## AllowOverrideList None
         AddType text/plain .html .htm .shtml
         Options -FollowSymLinks
         Options -SymLinksIfOwnerMatch
@@ -272,36 +315,41 @@
 #	ServerAlias     $vhost.$DEFAULT_HOSTNAME
 
 	# Environment variables used.
-	# mark forwarded (proxy) requests:
-	SetEnvIf X-Forwarded-For "^.*\..*\..*\..*" forwarded
-	# optionally mark IPs to watch:
-#   	SetEnvIf            Remote_Addr "1\.2\.4\.4" alert
+	<IfModule setenvif_module>
+	    # mark forwarded (proxy) requests:
+    	    SetEnvIf X-Forwarded-For "^.*\..*\..*\..*" forwarded
+            # mark logtail Ajax requests:
+            SetEnvIfNoCase Request_URI "/log/([a-z0-9]+)\.php\??" logtail
+            # collect requests to hide from access log:
+            SetEnvIfExpr "-n reqenv('forwarded') || -n reqenv('logtail')" dontlog
+	    # optionally mark IPs to watch:
+#   	    SetEnvIf            Remote_Addr "1\.2\.4\.4" alert
+	</IfModule>
 
 	# Common log settings.
         ErrorLog            $APACHELOGDIR/$vhost-error.log
 	# Proxy requests exclusion from access.log:
-        CustomLog           $APACHELOGDIR/$vhost-access.log combined env=!forwarded
+	CustomLog           $APACHELOGDIR/$vhost-access.log combined env=!dontlog
 	# ModSecurity logging:
         <IfModule security2_module>
 	    SecAuditLog 	$APACHELOGDIR/ALLHOSTS-audit.log
 	    SecAuditLog2	$APACHELOGDIR/$vhost-audit.log
         </IfModule>
-
         # Optional alert logging:
 #       SetEnvIf            Remote_Addr "1\.2\.4\.4" alert
 #       CustomLog           $APACHELOGDIR/$vhost-alert.log combined env=alert
         # Common alert log to watch with logcheck:
 #       CustomLog           $APACHELOGDIR/ALLHOSTS-alert.log combined env=alert
-        # Optional forensic logging:
-        <IfModule log_forensic_module>
-#           ForensicLog $APACHELOGDIR/$vhost-forensic.log
-        </IfModule>
+	# Optional forensic logging:
+	<IfModule log_forensic_module>
+#	    ForensicLog $APACHELOGDIR/$vhost-forensic.log
+	</IfModule>
 
         SSLEngine on
 	# Server Name Indication and per-virtualhost server certificate.
  	SSLCertificateFile      $APACHEAUTHDIR/$vhost.pem
         SSLCertificateKeyFile   $APACHEAUTHDIR/$vhost.key
-        ## Be careful, the mobile browsers may ignore this directive!
+	## Be careful, the mobile browsers may ignore this directive!
         SSLCertificateChainFile	$APACHEAUTHDIR/$vhost.chain
         # Alternatively common server's certificate, probably untrusted with different CN!
 #       SSLCertificateFile	$SSLCERTDIR/$DEFAULT_HOSTNAME.pem
@@ -316,15 +364,15 @@
         # Fix buggy clients' communications.
         <IfModule setenvif_module>
             ## Internet Explorer up to 6.x
-            SetEnvIf User-Agent ".*MSIE [2-6].*" \
+            SetEnvIfNoCase User-Agent ".*MSIE [2-6].*" \
                 nokeepalive ssl-unclean-shutdown \
                 downgrade-1.0 force-response-1.0
             ## Internet Explorer up to 10.x
-            SetEnvIf User-Agent ".*MSIE [17-9].*" \
+            SetEnvIfNoCase User-Agent ".*MSIE [17-9].*" \
                 ssl-unclean-shutdown \
 #               nokeepalive
             ## Internet Explorer 11.x (the KeepAliveTimeout problem)
-            ## http://stackoverflow.com/questions/23145688/ie10-11-ajax-xhr-error-script7002-xmlhttprequest-network-error-0x2ef3
+	    ## http://stackoverflow.com/questions/23145688/ie10-11-ajax-xhr-error-script7002-xmlhttprequest-network-error-0x2ef3
             SetEnvIfNoCase User-Agent "^Mozilla\/5\.0 \(Windows NT.*rv:11" \
                 ssl-unclean-shutdown \
 #               nokeepalive
@@ -337,11 +385,6 @@
         <IfModule mod_php5.c>
             php_admin_flag engine off
         </IfModule>
-
-        # .htaccess editing enabled on HTTPs
-        <Files ~ "^\.ht">
-            Allow from all
-        </Files>
 
         # ModSecurity settings (entire virtualhost).
         <IfModule security2_module>
@@ -368,27 +411,29 @@
         # Reverse proxy settings (delivering http via https).
         <IfModule mod_proxy.c>
             ProxyRequests off
-            ## Keep over php_admin_value max_execution_time in HTTP configuration!
-            ProxyTimeout 300
+	    ## Keep over php_admin_value max_execution_time in HTTP configuration!
+            ProxyTimeout 60
 #           ProxyPass        / http://$vhost/
             ProxyPassReverse / http://%{HTTP_HOST}/
             <Proxy *>
-                Order deny,allow
-#               Deny from all
-                Allow from all
+		Require all granted
             </Proxy>
         </IfModule>
 
 	# On rewrite, all, except special pages (logs, stats, status, etc.) or DAV activities,
 	# are forwarded to the http webserver via reverse proxy call.
 	# Decision will be indicated by two, mutually exclusive environment variables:
-	# E=ViaHTTP:1 for http proxy call; E=ViaHTTPs:1 for direct https service.
-        <IfModule mod_rewrite.c>
-            RewriteEngine On
-#           RewriteLog $APACHELOGDIR/$vhost-rewrite.log
-#           RewriteLogLevel 3
+        # E=ViaHTTP:1 for http proxy call; E=ViaHTTPs:1 for direct https service.
+	<IfModule mod_rewrite.c>
+    	    RewriteEngine On
+	    # Use only on debug!
+#	    LogLevel mod_rewrite.c:trace3
 	    #
-            # Disable TRACE and TRACK methods
+    	    # Disabling TRACE and TRACK methods.
+	    # http://httpd.apache.org/docs/2.4/mod/core.html#traceenable
+	    # "Despite claims to the contrary, TRACE is not a security vulnerability
+	    # and there is no viable reason for it to be disabled."
+	    # Who knows?
             RewriteCond %{REQUEST_METHOD} ^(TRACE|TRACK)$
             RewriteRule .* - [F]
 	    #
@@ -406,7 +451,7 @@
             ## RewriteCond %{REQUEST_URI} ^/some/path/always_https
             ## RewriteRule .* - [L,E=ViaHTTPs:1]
             ## RewriteCond %{REQUEST_URI} ^/some/path/always_http
-            ## RewriteRule .* - [E=ViaHTTPs:1]
+            ## RewriteRule .* - [E=ViaHTTP:1]
             #
 
 	    #
@@ -417,12 +462,39 @@
             RewriteCond %{HTTP:Authorization} !^$
             RewriteRule .* - [L,E=ViaHTTPs:1]
 	    #
-            # Any other browser requests are forwarded to http.
-	    #
-	    # The proxy call itself.
+            # Any other browser requests will be forwarded to http
+	    # via the last (proxy) rewrite with some rows below.
+
+            # Optional client certificate authentication before proxying.
+            # We accept a valid client certificate or the DAV authentication also.
+	    # To protect the whole site, simply comment out the LocationMatch below.
+            <LocationMatch "^/(admin(/.*)*$)">
+                <If "%{ENV:ViaHTTP} = 1 || ! %{ENV:ViaHTTPs} = 1">
+                    # Optional certificate
+                    SSLVerifyClient optional
+                    SSLVerifyDepth 1
+                    # DAV credentials
+                    AuthType Basic
+                    AuthBasicProvider file
+                    AuthName "Administration"
+        	    AuthUserFile  $APACHEAUTHDIR/$vhost.user
+        	    AuthGroupFile $APACHEAUTHDIR/$vhost.group
+                    <RequireAny>
+                        Require ssl-verify-client
+        		Require group $APACHEVHADMINGROUP
+                    </RequireAny>
+                    # http://serverfault.com/questions/419723/request-entity-too-large-error-while-uploading-files-of-more-than-128kb-over-ssl
+                    # Set higher or equal to PHP upload limit and POST size limit.
+                    SSLRenegBufferSize 10486000
+                </If>
+            </LocationMatch>
+
+            # The proxy call itself.
             <IfModule mod_headers.c>
-                RequestHeader add X-Forwarded-Proto https
-		RequestHeader add X-Forwarded-Port $APACHESSLPORT
+                <If "%{ENV:ViaHTTP} = 1 || ! %{ENV:ViaHTTPs} = 1">
+            	    RequestHeader add X-Forwarded-Proto https
+		    RequestHeader add X-Forwarded-Port $APACHESSLPORT
+		</If>
             </IfModule>
             RewriteRule ^(.*)   http://%{HTTP_HOST}$1 [P,QSA,L]
         </IfModule>
@@ -431,12 +503,22 @@
         <Directory $APACHEDOCROOT/$vhost>
             <IfModule mod_dav_fs.c>
                 DAV on
+                # Bug: https://bz.apache.org/bugzilla/show_bug.cgi?id=54914
+                <If "%{REQUEST_METHOD} in { 'OPTIONS', 'PROPFIND' }">
+                    DirectoryIndex disabled
+                </If>
+                # .htaccess editing enabled also
+                <FilesMatch "^\.ht">
+                    Require group $APACHEVHADMINGROUP
+                </FilesMatch>
             </IfModule>
-            Allow from all
             AllowOverride None
+            ## Take care, may break .htaccess evaluation!
+            ## AllowOverrideList None
             Options +FollowSymLinks
 #           Options +SymLinksIfOwnerMatch
             AuthType Basic
+	    AuthBasicProvider file
             AuthName "Administration"
             AuthUserFile  $APACHEAUTHDIR/$vhost.user
             AuthGroupFile $APACHEAUTHDIR/$vhost.group
@@ -446,41 +528,46 @@
         # Statistic pages settings.
         <LocationMatch "^/(awstats(/.*)*$)|(forgalom(/.*)*$)">
             <IfModule mod_dav_fs.c>
-                # Isn't supported yet...
+                # Unfortunately, DAV Off cannot be used to turn off a subtree of a DAV-enabled location.
+                # https://wiki.apache.org/httpd/ListOfErrors AH00578
                 #DAV off
             </IfModule>
+            Options +FollowSymLinks
             AuthType Basic
+	    AuthBasicProvider file
             AuthName "Statistics"
             AuthUserFile  $APACHEAUTHDIR/$vhost.user
             AuthGroupFile $APACHEAUTHDIR/$vhost.group
             <Limit GET HEAD OPTIONS>
-                Require group $APACHEVHSTATSGROUP
+        	Require group $APACHEVHSTATSGROUP
             </Limit>
             <LimitExcept GET HEAD OPTIONS>
-                Deny from all
+                Require all denied
             </LimitExcept>
         </LocationMatch>
 
         # Logfiles settings.
         <LocationMatch "^/(log(/.*)*$)">
-            <IfModule mod_dav_fs.c>
-                # Isn't supported yet...
+            <IfModule mod_dav.c>
+                # Unfortunately, DAV Off cannot be used to turn off a subtree of a DAV-enabled location.
+                # https://wiki.apache.org/httpd/ListOfErrors AH00578
                 #DAV off
             </IfModule>
             Options +FollowSymLinks +Indexes
             AuthType Basic
+	    AuthBasicProvider file
             AuthName "Logfiles"
             AuthUserFile  $APACHEAUTHDIR/$vhost.user
             AuthGroupFile $APACHEAUTHDIR/$vhost.group
             <Limit GET HEAD OPTIONS>
-                Require group $APACHEVHADMINGROUP
-            </Limit>
+        	Require group $APACHEVHADMINGROUP
+	    </Limit>
             <LimitExcept GET HEAD OPTIONS>
-                Deny from all
+                Require all denied
             </LimitExcept>
-            <IfModule mod_php5.c>
+	    <IfModule mod_php5.c>
                 php_admin_flag engine on
-                php_admin_value open_basedir $APACHEDOCROOT/$vhost/$APACHEVHLOGDIR/:$APACHELOGDIR/:$PHPLOGDIR/:$WSMTEMPLATEDIR/
+    		php_admin_value open_basedir $APACHEDOCROOT/$vhost/$APACHEVHLOGDIR/:$APACHELOGDIR/:$PHPLOGDIR/:$WSMTEMPLATEDIR/
             </IfModule>
         </LocationMatch>
 
