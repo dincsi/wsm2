@@ -1,0 +1,707 @@
+# file: .
+# owner: root
+# group: root
+user::rwx
+group::r-x
+other::r-x
+
+# file: usr
+# owner: root
+# group: root
+user::rwx
+group::r-x
+other::r-x
+
+# file: usr/local
+# owner: root
+# group: root
+user::rwx
+group::r-x
+other::r-x
+
+# file: usr/local/share
+# owner: root
+# group: root
+user::rwx
+group::r-x
+other::r-x
+
+# file: usr/local/share/website-manager-2
+# owner: root
+# group: staff
+user::rwx
+group::r-x
+other::r-x
+
+# file: usr/local/share/website-manager-2/README
+# owner: root
+# group: staff
+user::rw-
+group::r--
+other::r--
+
+# file: usr/local/share/website-manager-2/urlcheck
+# owner: root
+# group: staff
+user::rwx
+group::r-x
+other::r-x
+
+# file: usr/local/share/website-manager-2/urlcheck/urlcheck_scanhosts.sh
+# owner: root
+# group: staff
+user::rwx
+group::r-x
+other::---
+
+# file: usr/local/share/website-manager-2/urlcheck/urlcheck_distlogs.sh
+# owner: root
+# group: staff
+user::rwx
+group::r-x
+other::---
+
+# file: usr/local/share/website-manager-2/urlcheck/urlcheck.sh
+# owner: root
+# group: staff
+user::rwx
+group::r-x
+other::r-x
+
+# file: usr/local/share/website-manager-2/COPYLEFT
+# owner: root
+# group: staff
+user::rw-
+group::r--
+other::r--
+
+# file: usr/local/share/website-manager-2/templates
+# owner: root
+# group: staff
+user::rwx
+group::r-x
+other::r-x
+
+# file: usr/local/share/website-manager-2/templates/http.conf.6
+# owner: root
+# group: staff
+user::rw-
+group::r--
+other::r--
+
+# file: usr/local/share/website-manager-2/templates/http.conf
+# owner: root
+# group: staff
+user::rw-
+group::r--
+other::r--
+
+# file: usr/local/share/website-manager-2/templates/cert_self.cnf
+# owner: root
+# group: root
+user::rw-
+group::r--
+other::r--
+
+# file: usr/local/share/website-manager-2/templates/wsm2-modsec
+# owner: root
+# group: root
+user::rw-
+group::r--
+other::r--
+
+# file: usr/local/share/website-manager-2/templates/urlcheck.hosts
+# owner: root
+# group: root
+user::rw-
+group::r--
+other::r--
+
+# file: usr/local/share/website-manager-2/templates/robots.txt
+# owner: root
+# group: staff
+user::rw-
+group::r--
+other::---
+
+# file: usr/local/share/website-manager-2/templates/awstats.hosts
+# owner: root
+# group: root
+user::rw-
+group::r--
+other::r--
+
+# file: usr/local/share/website-manager-2/templates/cert_server.req
+# owner: root
+# group: root
+user::rw-
+group::r--
+other::r--
+
+# file: usr/local/share/website-manager-2/templates/wsm2-local.6
+# owner: root
+# group: root
+user::rw-
+group::r--
+other::r--
+
+# file: usr/local/share/website-manager-2/templates/wsm2-modsec.6
+# owner: root
+# group: root
+user::rw-
+group::r--
+other::r--
+
+# file: usr/local/share/website-manager-2/templates/http.conf.7
+# owner: root
+# group: staff
+user::rw-
+group::r--
+other::r--
+
+# file: usr/local/share/website-manager-2/templates/wsm2-local
+# owner: root
+# group: root
+user::rw-
+group::r--
+other::r--
+
+# file: usr/local/share/website-manager-2/templates/wsm2-php5.ini.7
+# owner: root
+# group: root
+user::rw-
+group::r--
+other::r--
+
+# file: usr/local/share/website-manager-2/templates/CAcert.req
+# owner: root
+# group: root
+user::rw-
+group::r--
+other::r--
+
+# file: usr/local/share/website-manager-2/templates/CA.cnf
+# owner: root
+# group: root
+user::rw-
+group::r--
+other::r--
+
+# file: usr/local/share/website-manager-2/templates/index.html
+# owner: root
+# group: staff
+user::rw-
+group::r--
+other::---
+
+# file: usr/local/share/website-manager-2/templates/wsm2-php5.ini
+# owner: root
+# group: root
+user::rw-
+group::r--
+other::r--
+
+# file: usr/local/share/website-manager-2/templates/modsecurity_crs_99_errata.wsm2
+# owner: root
+# group: root
+user::rw-
+group::r--
+other::r--
+
+# file: usr/local/share/website-manager-2/templates/wsm2-defaults
+# owner: root
+# group: root
+user::rw-
+group::r--
+other::r--
+
+# file: usr/local/share/website-manager-2/templates/wsm2-logtail.php
+# owner: root
+# group: staff
+user::rw-
+group::r--
+other::r--
+
+# file: usr/local/share/website-manager-2/templates/cert_client.req
+# owner: root
+# group: root
+user::rw-
+group::r--
+other::r--
+
+# file: usr/local/share/website-manager-2/templates/cert_client.cnf
+# owner: root
+# group: root
+user::rw-
+group::r--
+other::r--
+
+# file: usr/local/share/website-manager-2/templates/.htcrontab
+# owner: root
+# group: root
+user::rw-
+group::r--
+other::r--
+
+# file: usr/local/share/website-manager-2/templates/wsm2-modsec.7
+# owner: root
+# group: root
+user::rw-
+group::r--
+other::r--
+
+# file: usr/local/share/website-manager-2/templates/wsm2-defaults.6
+# owner: root
+# group: root
+user::rw-
+group::r--
+other::r--
+
+# file: usr/local/share/website-manager-2/templates/modsecurity_crs_99_errata.wsm2.8
+# owner: root
+# group: root
+user::rw-
+group::r--
+other::r--
+
+# file: usr/local/share/website-manager-2/templates/urlcheck.exception
+# owner: root
+# group: root
+user::rw-
+group::r--
+other::r--
+
+# file: usr/local/share/website-manager-2/templates/wsm2-local.7
+# owner: root
+# group: root
+user::rw-
+group::r--
+other::r--
+
+# file: usr/local/share/website-manager-2/templates/jquery-1.12.3.min.js
+# owner: root
+# group: root
+user::rw-
+group::r--
+other::r--
+
+# file: usr/local/share/website-manager-2/templates/awstats.exception
+# owner: root
+# group: root
+user::rw-
+group::r--
+other::r--
+
+# file: usr/local/share/website-manager-2/templates/cert_server.cnf
+# owner: root
+# group: root
+user::rw-
+group::r--
+other::r--
+
+# file: usr/local/share/website-manager-2/templates/wsm2-defaults.7
+# owner: root
+# group: root
+user::rw-
+group::r--
+other::r--
+
+# file: usr/local/share/website-manager-2/templates/wsm2-php5.ini.6
+# owner: root
+# group: root
+user::rw-
+group::r--
+other::r--
+
+# file: usr/local/share/website-manager-2/INSTALL.howto
+# owner: root
+# group: staff
+user::rw-
+group::r--
+other::r--
+
+# file: usr/local/share/website-manager-2/modsecurity
+# owner: root
+# group: staff
+user::rwx
+group::r-x
+other::r-x
+
+# file: usr/local/share/website-manager-2/modsecurity/modsec-auditclear.sh
+# owner: root
+# group: www-data
+user::rwx
+group::r-x
+other::---
+
+# file: usr/local/share/website-manager-2/modsecurity/modsec-auditgen.sh
+# owner: root
+# group: staff
+user::rwx
+group::r-x
+other::---
+
+# file: usr/local/share/website-manager-2/modsecurity/modsec-update.sh
+# owner: root
+# group: staff
+user::rwx
+group::r-x
+other::---
+
+# file: usr/local/share/website-manager-2/modsecurity/modsec-audit.sh
+# owner: root
+# group: staff
+user::rwx
+group::r-x
+other::---
+
+# file: usr/local/share/website-manager-2/modsecurity/modsec-update-owasp.sh
+# owner: root
+# group: staff
+user::rwx
+group::r-x
+other::---
+
+# file: usr/local/share/website-manager-2/awstats
+# owner: root
+# group: staff
+user::rwx
+group::r-x
+other::r-x
+
+# file: usr/local/share/website-manager-2/awstats/awstats_buildmenupages.sh
+# owner: root
+# group: staff
+user::rwx
+group::r-x
+other::---
+
+# file: usr/local/share/website-manager-2/awstats/awstats_refreshpages.sh
+# owner: root
+# group: staff
+user::rwx
+group::r-x
+other::---
+
+# file: usr/local/share/website-manager-2/awstats/awstats_buildmonthpage.sh
+# owner: root
+# group: staff
+user::rwx
+group::r-x
+other::---
+
+# file: usr/local/share/website-manager-2/awstats/awstats_scanhosts.sh
+# owner: root
+# group: staff
+user::rwx
+group::r-x
+other::---
+
+# file: usr/local/share/website-manager-2/awstats/awstats_daily.sh
+# owner: root
+# group: staff
+user::rwx
+group::r-x
+other::r-x
+
+# file: usr/local/share/website-manager-2/awstats/awstats_rebuildpages.sh
+# owner: root
+# group: staff
+user::rwx
+group::r-x
+other::---
+
+# file: usr/local/share/website-manager-2/wsm2
+# owner: root
+# group: staff
+user::rwx
+group::r-x
+other::r-x
+
+# file: usr/local/share/website-manager-2/wsm2/website-manager-2.sh
+# owner: root
+# group: staff
+user::rwx
+group::r-x
+other::---
+
+# file: usr/local/share/website-manager-2/wsm2/wsm2-webcron-parser.pl
+# owner: root
+# group: staff
+user::rwx
+group::r-x
+other::r-x
+
+# file: usr/local/share/website-manager-2/wsm2/wsm2-webcron.sh
+# owner: root
+# group: staff
+user::rwx
+group::r-x
+other::r-x
+
+# file: usr/local/share/website-manager-2/wsm2/wsm2-crl-refresh.sh
+# owner: root
+# group: staff
+user::rwx
+group::r-x
+other::---
+
+# file: usr/local/share/website-manager-2/wsm2/wsm2-init.sh
+# owner: root
+# group: staff
+user::rwx
+group::r-x
+other::---
+
+# file: usr/local/share/website-manager-2/geoipfree
+# owner: root
+# group: staff
+user::rwx
+group::r-x
+other::r-x
+
+# file: usr/local/share/website-manager-2/geoipfree/geolite-update
+# owner: root
+# group: staff
+user::rwx
+group::r-x
+other::---
+
+# file: usr/local/share/website-manager-2/geoipfree/geo-compute
+# owner: root
+# group: staff
+user::rwx
+group::r-x
+other::---
+
+# file: usr/local/share/website-manager-2/geoipfree/geo-compute.sh
+# owner: root
+# group: staff
+user::rwx
+group::r-x
+other::---
+
+# file: usr/local/share/website-manager-2/geoipfree/geoip.c
+# owner: root
+# group: staff
+user::rw-
+group::r--
+other::---
+
+# file: usr/local/share/website-manager-2/geoipfree/txt2ipct.pl
+# owner: root
+# group: staff
+user::rwx
+group::r-x
+other::---
+
+# file: usr/local/share/website-manager-2/geoipfree/geoipfree-update
+# owner: root
+# group: staff
+user::rwx
+group::r-x
+other::---
+
+# file: usr/local/bin
+# owner: root
+# group: root
+user::rwx
+group::r-x
+other::r-x
+
+# file: wsm2facl
+# owner: root
+# group: root
+user::rw-
+group::r--
+other::r--
+
+# file: etc
+# owner: root
+# group: root
+user::rwx
+group::r-x
+other::r-x
+
+# file: etc/cron.d
+# owner: root
+# group: root
+user::rwx
+group::r-x
+other::r-x
+
+# file: etc/cron.d/wsm2
+# owner: root
+# group: root
+user::rw-
+group::r--
+other::r--
+
+# file: etc/cron.daily
+# owner: root
+# group: root
+user::rwx
+group::r-x
+other::r-x
+
+# file: etc/awstats
+# owner: root
+# group: root
+user::rwx
+group::r-x
+other::r-x
+
+# file: etc/awstats/awstats.conf.common
+# owner: root
+# group: root
+user::rw-
+group::r--
+other::r--
+
+# file: etc/awstats/awstats.conf.template
+# owner: root
+# group: root
+user::rw-
+group::r--
+other::r--
+
+# file: etc/default
+# owner: root
+# group: root
+user::rwx
+group::r-x
+other::r-x
+
+# file: etc/default/wsm2-awstats
+# owner: root
+# group: root
+user::rw-
+group::r--
+other::r--
+
+# file: etc/default/wsm2-geoipfree
+# owner: root
+# group: root
+user::rw-
+group::r--
+other::r--
+
+# file: etc/default/wsm2-urlcheck
+# owner: root
+# group: root
+user::rw-
+group::r--
+other::r--
+
+# file: etc/default/wsm2-modsec-update
+# owner: root
+# group: root
+user::rw-
+group::r--
+other::r--
+
+# file: etc/default/wsm2-common
+# owner: root
+# group: root
+user::rw-
+group::r--
+other::r--
+
+# file: etc/default/wsm2-modsec-audit
+# owner: root
+# group: root
+user::rw-
+group::r--
+other::r--
+
+# file: etc/default/wsm2-modsec-update-owasp
+# owner: root
+# group: root
+user::rw-
+group::r--
+other::r--
+
+# file: etc/default/wsm2-geolite
+# owner: root
+# group: root
+user::rw-
+group::r--
+other::r--
+
+# file: etc/default/wsm2
+# owner: root
+# group: root
+user::rw-
+group::r--
+other::r--
+
+# file: etc/default/wsm2-webcron
+# owner: root
+# group: root
+user::rw-
+group::r--
+other::r--
+
+# file: etc/logrotate.d
+# owner: root
+# group: root
+user::rwx
+group::r-x
+other::r-x
+
+# file: etc/logrotate.d/wsm2
+# owner: root
+# group: root
+user::rw-
+group::r--
+other::r--
+
+# file: etc/cron.weekly
+# owner: root
+# group: root
+user::rwx
+group::r-x
+other::r-x
+
+# file: root
+# owner: root
+# group: root
+user::rwx
+group::r-x
+other::r-x
+
+# file: root/tmp
+# owner: root
+# group: root
+user::rwx
+group::r-x
+other::r-x
+
+# file: root/tmp/website-manager-2
+# owner: root
+# group: root
+user::rwx
+group::---
+other::---
+
+# file: var
+# owner: root
+# group: root
+user::rwx
+group::r-x
+other::r-x
+
+# file: var/lib
+# owner: root
+# group: root
+user::rwx
+group::r-x
+other::r-x
+
+# file: var/lib/geoipfree
+# owner: root
+# group: root
+user::rwx
+group::r-x
+other::r-x
+
