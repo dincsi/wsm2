@@ -60,11 +60,11 @@ ErrorLog /var/log/apache2/error.log
     Require all denied
     # DirectoryIndex restrictions
     <IfModule mod_dir.c>
-      <IfModule mod_php5.c>
+      <IfModule mod_php7.c>
         # Indirectly disallow CGI, Perl, etc.
         DirectoryIndex index.html index.php index.xhtml index.htm
       </IfModule>
-      <IfModule !mod_php5.c>
+      <IfModule !mod_php7.c>
         # Disable index.php also (prevents forbidden autoindex page).
         DirectoryIndex index.html index.xhtml index.htm
       </IfModule>
@@ -72,11 +72,11 @@ ErrorLog /var/log/apache2/error.log
 </Directory>
 
 # Disallow PHP by default.
-<IfModule mod_php5.c>
+<IfModule mod_php7.c>
     php_admin_flag engine off
 </IfModule>
 # Prevents downloading PHP scripts and sources when engine isn't loaded.
-<IfModule !mod_php5.c>
+<IfModule !mod_php7.c>
     <FilesMatch "\.ph(p[345]?|t|tml|ps)$">
 	Require all denied
     </FilesMatch>

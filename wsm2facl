@@ -194,6 +194,13 @@ user::rw-
 group::r--
 other::---
 
+# file: usr/local/share/website-manager-2/templates/wsm2-php5.ini.8
+# owner: root
+# group: root
+user::rw-
+group::r--
+other::r--
+
 # file: usr/local/share/website-manager-2/templates/wsm2-php5.ini
 # owner: root
 # group: root
