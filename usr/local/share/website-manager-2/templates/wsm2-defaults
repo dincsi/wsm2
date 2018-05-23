@@ -19,12 +19,12 @@ TraceEnable Off
 </IfModule>
 
 # Multiuser (mpm-itk) lockfiles (writable for anyone within www-data group).
-Mutex file:/var/lock/apache2 mpm-accept
+Mutex file:/var/lock/apache2-mpm-itk mpm-accept
 <IfModule mod_rewrite.c>
-    Mutex file:/var/lock/apache2 rewrite-map
+    Mutex file:/var/lock/apache2-mpm-itk rewrite-map
 </IfModule>
 <IfModule mod_dav_fs.c>
-    DavLockDB /var/lock/apache2/DavLock
+    DavLockDB /var/lock/apache2-mpm-itk/DavLock
 </IfModule>
 
 # Logfiles.
